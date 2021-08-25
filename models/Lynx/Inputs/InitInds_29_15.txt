@@ -1,0 +1,5 @@
+Year	Species	PatchID	Ninds	Sex	Age	Stage
+0	0	29	9	0	3	3
+0	0	29	9	1	3	3
+0	0	15	7	0	3	3
+0	0	15	7	1	3	3
