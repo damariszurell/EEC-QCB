@@ -19,11 +19,18 @@
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
 <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -39,11 +46,6 @@
     </style>
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
-  pre:not([class]) {
-    background-color: white;
-  }
-</style>
 <script type="text/javascript">
 if (window.hljs) {
   hljs.configure({languages: []});
@@ -56,32 +58,7 @@ if (window.hljs) {
 
 
 
-<style type="text/css">
-h1 {
-  font-size: 34px;
-}
-h1.title {
-  font-size: 38px;
-}
-h2 {
-  font-size: 30px;
-}
-h3 {
-  font-size: 24px;
-}
-h4 {
-  font-size: 18px;
-}
-h5 {
-  font-size: 16px;
-}
-h6 {
-  font-size: 12px;
-}
-.table th:not([align]) {
-  text-align: left;
-}
-</style>
+
 
 
 
@@ -91,10 +68,6 @@ h6 {
   max-width: 940px;
   margin-left: auto;
   margin-right: auto;
-}
-code {
-  color: inherit;
-  background-color: rgba(0, 0, 0, 0.04);
 }
 img {
   max-width:100%;
@@ -111,40 +84,13 @@ button.code-folding-btn:focus {
 summary {
   display: list-item;
 }
+pre code {
+  padding: 0;
+}
 </style>
 
 
 <style type="text/css">
-/* padding for bootstrap navbar */
-body {
-  padding-top: 51px;
-  padding-bottom: 40px;
-}
-/* offset scroll position for anchor links (for fixed navbar)  */
-.section h1 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h2 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h3 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h4 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h5 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
-.section h6 {
-  padding-top: 56px;
-  margin-top: -56px;
-}
 .dropdown-submenu {
   position: relative;
 }
@@ -172,7 +118,7 @@ body {
   margin-right: -10px;
 }
 .dropdown-submenu:hover>a:after {
-  border-left-color: #ffffff;
+  border-left-color: #adb5bd;
 }
 .dropdown-submenu.pull-left {
   float: none;
@@ -184,7 +130,7 @@ body {
 }
 </style>
 
-<script>
+<script type="text/javascript">
 // manage active state of menu based on current page
 $(document).ready(function () {
   // active menu anchor
@@ -195,10 +141,23 @@ $(document).ready(function () {
   var menuAnchor = $('a[href="' + href + '"]');
 
   // mark it active
-  menuAnchor.parent().addClass('active');
+  menuAnchor.tab('show');
 
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
 });
 </script>
 
@@ -210,7 +169,6 @@ $(document).ready(function () {
   max-height: 500px;
   min-height: 44px;
   overflow-y: auto;
-  background: white;
   border: 1px solid #ddd;
   border-radius: 4px;
 }
@@ -342,7 +300,7 @@ $(document).ready(function () {
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-<div class="fluid-row" id="header">
+<div id="header">
 
 
 
@@ -357,7 +315,7 @@ $(document).ready(function () {
 </div>
 <div id="schedule-for-block-course-on-applied-population-modelling" class="section level4">
 <h4>Schedule for block course on applied population modelling</h4>
-<table class="table" style="margin-left: auto; margin-right: auto;">
+<table class=" lightable-paper lightable-hover" style='font-family: "Arial Narrow", arial, helvetica, sans-serif; margin-left: auto; margin-right: auto;'>
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -371,138 +329,118 @@ R practical
 </tr>
 </thead>
 <tbody>
-<tr grouplength="3">
-<td colspan="3" style="border-bottom: 1px solid;">
-<strong>Day 1</strong>
-</td>
-</tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(42, 120, 142, 0.3) !important;">
+Day 1
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(42, 120, 142, 0.3) !important;">
 Introduction to Individual-based modelling
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(42, 120, 142, 0.3) !important;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(42, 120, 142, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(42, 120, 142, 0.3) !important;">
 The RangeShiftR package, Flowcharts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(42, 120, 142, 0.3) !important;">
 Tutorial 1: Getting started with RangeShiftR
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(42, 120, 142, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(42, 120, 142, 0.3) !important;">
 Matrix population models
 </td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr grouplength="3">
-<td colspan="3" style="border-bottom: 1px solid;">
-<strong>Day 2</strong>
+<td style="text-align:left;background-color: rgba(42, 120, 142, 0.3) !important;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(30, 156, 137, 0.3) !important;">
+Day 2
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(30, 156, 137, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(30, 156, 137, 0.3) !important;">
 Tutorial 2: Black grouse range dynamics
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(30, 156, 137, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(30, 156, 137, 0.3) !important;">
 Dispersal models
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(30, 156, 137, 0.3) !important;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(30, 156, 137, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(30, 156, 137, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(30, 156, 137, 0.3) !important;">
 Tutorial 3: Eurasian lynx reintroduction
 </td>
 </tr>
-<tr grouplength="3">
-<td colspan="3" style="border-bottom: 1px solid;">
-<strong>Day 3</strong>
-</td>
-</tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(66, 190, 113, 0.3) !important;">
+Day 3
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(66, 190, 113, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(66, 190, 113, 0.3) !important;">
 Continue Tutorial 3
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(66, 190, 113, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(66, 190, 113, 0.3) !important;">
 Density dependence
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(66, 190, 113, 0.3) !important;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(66, 190, 113, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(66, 190, 113, 0.3) !important;">
 Intro to case studies
 </td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr grouplength="1">
-<td colspan="3" style="border-bottom: 1px solid;">
-<strong>Day 4</strong>
+<td style="text-align:left;background-color: rgba(66, 190, 113, 0.3) !important;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(154, 217, 61, 0.3) !important;">
+Day 4
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(154, 217, 61, 0.3) !important;">
 Group work on case studies
 </td>
-<td style="text-align:left;">
-</td>
-</tr>
-<tr grouplength="2">
-<td colspan="3" style="border-bottom: 1px solid;">
-<strong>Day 5</strong>
+<td style="text-align:left;background-color: rgba(154, 217, 61, 0.3) !important;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(253, 231, 37, 0.3) !important;">
+Day 5
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(253, 231, 37, 0.3) !important;">
 Continue group work on case studies
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(253, 231, 37, 0.3) !important;">
 </td>
 </tr>
 <tr>
-<td style="text-align:left; padding-left:  2em;" indentlevel="1">
+<td style="text-align:left;font-weight: bold;background-color: rgba(253, 231, 37, 0.3) !important;">
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(253, 231, 37, 0.3) !important;">
 Presentations
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: rgba(253, 231, 37, 0.3) !important;">
 </td>
 </tr>
 </tbody>
@@ -546,7 +484,7 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.tabset-dropdown > .nav-tabs > li').click(function () {
-    $(this).parent().toggleClass('nav-tabs-open')
+    $(this).parent().toggleClass('nav-tabs-open');
   });
 });
 </script>
