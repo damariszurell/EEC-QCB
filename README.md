@@ -1,5 +1,7 @@
 # EEC-QCB
 
+https://damariszurell.github.io/EEC-QCB/
+
 The Master module “Quantitative conservation biogeography” is an elective module within the Master programme “Ecology, Evolution and Conservation (EEC)” at the University of Potsdam.
 
 **Module coordinator:** Prof. Dr. Damaris Zurell
