@@ -3,3 +3,6 @@ models/Lynx/Outputs
 models/GettingStarted/Outputs
 data/wc*
 models
+data/ESP*
+data/redkite*
+data/ebd*

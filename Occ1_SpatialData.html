@@ -62,6 +62,28 @@ if (window.hljs) {
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 
 
@@ -336,6 +358,9 @@ div.tocify {
     <li>
       <a href="Occ1_SpatialData.html">1. Spatial data in R</a>
     </li>
+    <li>
+      <a href="Occ2_SpeciesData.html">2. Species data in R</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -394,8 +419,8 @@ the RStudio project create separate R scripts for each session.</p>
 <li>Create a new empty R script by going to the tab “File”, select “New
 File” and then “R script”</li>
 <li>In the new R script, type
-<code># Session 1: Spatial data in R</code> and save the file in your
-folder “scripts” within your project folder, e.g. as
+<code># Session Occ-1: Spatial data in R</code> and save the file in
+your folder “scripts” within your project folder, e.g. as
 “Occ1_SpatialData.R”</li>
 </ul>
 </div>
@@ -412,11 +437,11 @@ number="1">
 <h1><span class="header-section-number">1</span> Introduction to spatial
 data</h1>
 <p>Spatial data are typically stored as either vector data or raster
-data <span class="citation">(<strong>With2019?</strong>)</span>.
-Discrete objects with clear boundaries are usually represented by vector
-data (e.g. individual trees, roads, countries) while continuous
-phenomena without clear boundaries are usually represented by raster
-data (e.g. elevation, temperature).</p>
+data <span class="citation">(With 2019)</span>. Discrete objects with
+clear boundaries are usually represented by vector data (e.g. individual
+trees, roads, countries) while continuous phenomena without clear
+boundaries are usually represented by raster data (e.g. elevation,
+temperature).</p>
 <p><strong>Vector data</strong> can be mapped a points, lines, and
 polygons:</p>
 <ul>
@@ -775,7 +800,7 @@ standard repositories. Check them out in the help page
 elevation data, data on the global administrative boundaries (gadm) as
 well as current and future climates from <a
 href="http://worldclim.org/">WorldClim</a> <span
-class="citation">(<strong>Hijmans2005?</strong>)</span>.</p>
+class="citation">(Hijmans et al. 2005)</span>.</p>
 <pre><code>## class       : SpatRaster 
 ## dimensions  : 1080, 2160, 19  (nrow, ncol, nlyr)
 ## resolution  : 0.1666667, 0.1666667  (x, y)
@@ -932,8 +957,22 @@ instructions on above-mentioned website</p></li>
 </div>
 </div>
 </div>
-<div id="references" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> References</h1>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Hijmans2005" class="csl-entry">
+Hijmans, R. J., S. E. Cameron, J. L. Parra, P. G. Jones, and A. Jarvis.
+2005. <span>“Very High Resolution Interpolated Climate Surfaces for
+Global Land Areas.”</span> <em>International Journal of Climatology</em>
+25 (15): 1965–78. <a
+href="https://doi.org/10.1002/joc.1276">https://doi.org/10.1002/joc.1276</a>.
+</div>
+<div id="ref-With2019" class="csl-entry">
+With, Kimberly A. 2019. <em>Essentials of Landscape Ecology</em>. Oxford
+University Press. <a
+href="https://doi.org/10.1093/oso/9780198838388.001.0001">https://doi.org/10.1093/oso/9780198838388.001.0001</a>.
+</div>
+</div>
 </div>
 
 <!DOCTYPE html>

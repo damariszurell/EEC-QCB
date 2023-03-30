@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Species data</title>
+
+<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Quantitative conservation biogeography</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Pracs: occupancy modelling
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Occ0_setup.html">0. Getting started</a>
+    </li>
+    <li>
+      <a href="Occ1_SpatialData.html">1. Spatial data in R</a>
+    </li>
+    <li>
+      <a href="Occ2_SpeciesData.html">2. Species data in R</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Pracs: population modelling
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="RS1_overview.html">1. Getting started with RangeShiftR</a>
+    </li>
+    <li>
+      <a href="RS2_lynx.html">2. Eurasian lynx reintroduction</a>
+    </li>
+    <li>
+      <a href="RS3_blackgrouse.html">3. Black grouse range dynamics</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.uni-potsdam.de/en/ibb-macroecology/index">
+    <span class="fa fa-home"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://twitter.com/ZurellLab">
+    <span class="fa fa-twitter"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Species data</h1>
+
+</div>
+
+
+<hr />
+<div class="alert alert-info">
+<p><strong>RStudio project</strong></p>
+<p>Open the RStudio project that we created in the first session. I
+recommend to use this RStudio project for the entire module and within
+the RStudio project create separate R scripts for each session.</p>
+<ul>
+<li>Create a new empty R script by going to the tab “File”, select “New
+File” and then “R script”</li>
+<li>In the new R script, type <code># Session Occ-2: Species data</code>
+and save the file in your folder “scripts” within your project folder,
+e.g. as “Occ2_SpeciesData.R”</li>
+</ul>
+</div>
+<div id="background-occupancy-models" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Background: occupancy
+models</h1>
+<p>In ecology and conservation, we are often interested in how species
+are distributed in space and time and how environmental factors are
+influencing this distribution. This knowledge is important, for example,
+for deriving management decisions, and for planning or assessing the
+efficiency of protected areas.</p>
+<p>Species distributions can be readily estimated from species
+occurrence data that can originate from standardised surveys,
+opportunistic sightings or museum and herbarium collections. Yet,
+potential sampling biases can arise when monitoring species populations.
+For example, species may go undetected at sites although present.
+Detectability may also vary across space and time, and of course between
+different observers. Not considering the imperfect detection in analyses
+and models can considerable bias estimates of species distribution and
+can underestimate occupancy, obscure trends in occupancy, or obscure
+relationships with covariates.</p>
+<p>Occupancy (or occupancy-detection) models can deal with imperfect
+detection in species distribution modelling (<span
+class="citation">Guillera-Arroita (2017)</span>, <span
+class="citation">Kéry and Royle (2015)</span>). This is done by
+quantifying the detectability, the probability that at least one
+individual is detected in a particular sampling effort, conditional to
+the species being present in the area of interest during sampling. To be
+able to estimate the effect of imperfect detection we need to perform
+several independent surveys of the same site (temporal or spatial
+replication). Repeat surveys allow us to answer the question: “How often
+do we fail to detect the species in sites where we know it occurs as it
+had been detected on other survey occasions?”</p>
+<p>In the next few practicals, we will learn how to fit simple occupancy
+models, analyses these and make predictions. But first of all, we will
+take a closer look at the different kinds of data required for occupancy
+models.</p>
+</div>
+<div id="occurrence-data-from-ebird" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Occurrence data from
+eBird</h1>
+<p>One of the most important and time-consuming steps of occupancy
+modelling and many data analyses is actually the data preparation. Here,
+we will work with eBird data. eBird is a semi-structured citizen science
+project (<a href="https://ebird.org" class="uri">https://ebird.org</a>)
+with flexible, easy to follow protocols that attract many participants.
+It offers a real-time, online bird checklist. It mostly contains
+opportunistic sightings. But as eBird also collects metadata on the
+observation process (e.g. amount of time spent birding, number of
+observers, etc.), the data can also be useful for occupancy
+modelling.</p>
+<p>Here, we will use the <code>rebird</code>package that provides an R
+interface to the eBird webservices. Accessing eBird data through the API
+server requires an API key, meaning a token to use the API, which is
+linked to your personal eBird account. If you don’t have a key, you can
+obtain one from <a href="https://ebird.org/api/keygen"
+class="uri">https://ebird.org/api/keygen</a>.</p>
+<pre class="r"><code>library(rebird)</code></pre>
+<p>Most functions for data queries use a specific species code. A list
+with the entire taxonomy is stored internally:</p>
+<pre class="r"><code># Look at eBird taxonomy
+rebird:::tax</code></pre>
+<pre><code>## # A tibble: 16,753 × 15
+##    sciName comName speci…¹ categ…² taxon…³ bandi…⁴ comNa…⁵ sciNa…⁶ order famil…⁷
+##    &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  
+##  1 Struth… Common… ostric2 species       1 &lt;NA&gt;    COOS    STCA    Stru… struth1
+##  2 Struth… Somali… ostric3 species       6 &lt;NA&gt;    SOOS    STMO    Stru… struth1
+##  3 Struth… Common… y00934  slash         7 &lt;NA&gt;    SOOS,C… STMO,S… Stru… struth1
+##  4 Rhea a… Greate… grerhe1 species       8 &lt;NA&gt;    GRRH    RHAM    Rhei… rheida1
+##  5 Rhea p… Lesser… lesrhe2 species      14 &lt;NA&gt;    LERH    RHPE    Rhei… rheida1
+##  6 Rhea p… Lesser… lesrhe4 issf         15 &lt;NA&gt;    LERH,LR RHPE    Rhei… rheida1
+##  7 Rhea p… Lesser… lesrhe3 issf         18 &lt;NA&gt;    LERH,LR RHPE    Rhei… rheida1
+##  8 Nothoc… Tawny-… tabtin1 species      19 &lt;NA&gt;    TBTI    NOJU    Tina… tinami1
+##  9 Nothoc… Highla… higtin1 species      20 HITI    &lt;NA&gt;    NOBO    Tina… tinami1
+## 10 Nothoc… Highla… higtin2 issf         21 &lt;NA&gt;    HT,HITI NOBO    Tina… tinami1
+## # … with 16,743 more rows, 5 more variables: familyComName &lt;chr&gt;,
+## #   familySciName &lt;chr&gt;, reportAs &lt;chr&gt;, extinct &lt;lgl&gt;, extinctYear &lt;int&gt;, and
+## #   abbreviated variable names ¹​speciesCode, ²​category, ³​taxonOrder,
+## #   ⁴​bandingCodes, ⁵​comNameCodes, ⁶​sciNameCodes, ⁷​familyCode</code></pre>
+<p>We can also find the species code for a specific species. The
+function <code>species_code()</code> requires the scientific name of the
+species. Let’s look up the species code for the red kite (<em>Milvus
+milvus</em>):</p>
+<pre class="r"><code>species_code(&#39;Milvus milvus&#39;)</code></pre>
+<pre><code>## Red Kite (Milvus milvus): redkit1</code></pre>
+<pre><code>## [1] &quot;redkit1&quot;</code></pre>
+<p>The <code>rebird</code> package offers several functions to query
+data at a specific location or within a specific region, for a specific
+species or for all species. For an overview of all functions look up the
+list of functions <code>library(help='rebird')</code> or look at the
+vignette <code>vignette('rebird_vignette')</code>.</p>
+<p>We will first query data for the red kite in Spain using the function
+<code>ebirdregion()</code>. Look up the help page
+<code>?ebirdregion</code> to understand the different arguments. It only
+provides the most recent sightings (between 1 and 30 days; 14 days per
+default). For the query, we have to provide the personal access token
+for the API.</p>
+<pre class="r"><code># Find all eBird reportings of red kite in Spain in the last 30 days: 
+ebirdregion(loc = &#39;WS&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBIRD_KEY)</code></pre>
+<pre><code>## # A tibble: 0 × 0</code></pre>
+<p>To access periods that are longer away than the last 30 days, we can
+use the function <code>ebirdhistorical()</code>.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+## ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
+## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
+## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code># Get historical data for Spain and filter for red kite
+# The command &quot;%&gt;%&quot; is called a pipe and directs the output to the next function
+ebirdhistorical(loc = &#39;ES&#39;, date=&#39;2022-06-01&#39;, fieldSet=&#39;full&#39;, key=MY_EBIRD_KEY) %&gt;%
+  filter(speciesCode==&#39;redkit1&#39;)</code></pre>
+<pre><code>## # A tibble: 1 × 28
+##   speciesCode comName  sciName   locId locName obsDt howMany   lat   lng obsVa…¹
+##   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;  
+## 1 redkit1     Red Kite Milvus m… L190… Arroyo… 2022…       2  40.9 -5.67 TRUE   
+## # … with 18 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;,
+## #   subId &lt;chr&gt;, subnational1Code &lt;chr&gt;, subnational1Name &lt;chr&gt;,
+## #   countryCode &lt;chr&gt;, countryName &lt;chr&gt;, userDisplayName &lt;chr&gt;, obsId &lt;chr&gt;,
+## #   checklistId &lt;chr&gt;, presenceNoted &lt;lgl&gt;, hasComments &lt;lgl&gt;, firstName &lt;chr&gt;,
+## #   lastName &lt;chr&gt;, hasRichMedia &lt;lgl&gt;, subnational2Code &lt;chr&gt;,
+## #   subnational2Name &lt;chr&gt;, exoticCategory &lt;chr&gt;, and abbreviated variable name
+## #   ¹​obsValid</code></pre>
+<p>The function <code>ebirdhistorical()</code> only downloads one day at
+a time. Thus, if we want to download data for an extended period, we
+have to do this step by step. Below, we use the function
+<code>lapply()</code> to go through each day between the specified dates
+of 1-April-2022 to 30-June-2022, download the eBird data for Spain for
+that day, and afterwards bind the output of all days together using the
+function <code>bind_rows()</code>.</p>
+<pre class="r"><code># Download eBird detection in Spain for the months April-June 2022:
+ebd_Esp_2022 &lt;- bind_rows(
+  # Apply the download function to each day in the provided date sequence and collect output in a list
+  lapply(seq(as.Date(&#39;2022/04/01&#39;),as.Date(&#39;2022/06/30&#39;),&#39;days&#39;), FUN=function(x){
+  ebirdhistorical(loc = &#39;ES&#39;, date=x, fieldSet=&#39;full&#39;, key=MY_EBIRD_KEY)
+}))</code></pre>
+<pre class="r"><code># Inspect the resulting data
+glimpse(ebd_Esp_2022)</code></pre>
+<pre><code>## Rows: 26,401
+## Columns: 28
+## $ speciesCode      &lt;chr&gt; &quot;tawowl1&quot;, &quot;grnwoo3&quot;, &quot;ibechi2&quot;, &quot;cirbun1&quot;, &quot;eursco1&quot;…
+## $ comName          &lt;chr&gt; &quot;Tawny Owl&quot;, &quot;Iberian Green Woodpecker&quot;, &quot;Iberian Chi…
+## $ sciName          &lt;chr&gt; &quot;Strix aluco&quot;, &quot;Picus sharpei&quot;, &quot;Phylloscopus ibericu…
+## $ locId            &lt;chr&gt; &quot;L18329865&quot;, &quot;L18329803&quot;, &quot;L18329803&quot;, &quot;L18329803&quot;, &quot;…
+## $ locName          &lt;chr&gt; &quot;Sinarcas--Casa De La Lurdilla&quot;, &quot;21110, Aljaraque ES…
+## $ obsDt            &lt;chr&gt; &quot;2022-04-01 22:57&quot;, &quot;2022-04-01 22:53&quot;, &quot;2022-04-01 2…
+## $ howMany          &lt;int&gt; 1, 1, 1, 1, 1, 2, 7, 2, 9, 4, 2, 5, 2, 1, 3, 7, 1, 1,…
+## $ lat              &lt;dbl&gt; 39.70067, 37.27260, 37.27260, 37.27260, 37.11031, 37.…
+## $ lng              &lt;dbl&gt; -1.169880, -7.060195, -7.060195, -7.060195, -3.570006…
+## $ obsValid         &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE,…
+## $ obsReviewed      &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALS…
+## $ locationPrivate  &lt;lgl&gt; TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FAL…
+## $ subId            &lt;chr&gt; &quot;S106035557&quot;, &quot;S106035206&quot;, &quot;S106035206&quot;, &quot;S106035206…
+## $ subnational2Code &lt;chr&gt; &quot;ES-VC-VN&quot;, &quot;ES-AN-HL&quot;, &quot;ES-AN-HL&quot;, &quot;ES-AN-HL&quot;, &quot;ES-A…
+## $ subnational2Name &lt;chr&gt; &quot;Valencia&quot;, &quot;Huelva&quot;, &quot;Huelva&quot;, &quot;Huelva&quot;, &quot;Granada&quot;, …
+## $ subnational1Code &lt;chr&gt; &quot;ES-VC&quot;, &quot;ES-AN&quot;, &quot;ES-AN&quot;, &quot;ES-AN&quot;, &quot;ES-AN&quot;, &quot;ES-AN&quot;,…
+## $ subnational1Name &lt;chr&gt; &quot;Valenciana, Comunidad&quot;, &quot;Andalucía&quot;, &quot;Andalucía&quot;, &quot;A…
+## $ countryCode      &lt;chr&gt; &quot;ES&quot;, &quot;ES&quot;, &quot;ES&quot;, &quot;ES&quot;, &quot;ES&quot;, &quot;ES&quot;, &quot;ES&quot;, &quot;ES&quot;, &quot;ES&quot;,…
+## $ countryName      &lt;chr&gt; &quot;Spain&quot;, &quot;Spain&quot;, &quot;Spain&quot;, &quot;Spain&quot;, &quot;Spain&quot;, &quot;Spain&quot;,…
+## $ userDisplayName  &lt;chr&gt; &quot;Samuel Aunión Díaz&quot;, &quot;Juanjo Cipriano&quot;, &quot;Juanjo Cipr…
+## $ obsId            &lt;chr&gt; &quot;OBS1380130916&quot;, &quot;OBS1380131253&quot;, &quot;OBS1380131255&quot;, &quot;O…
+## $ checklistId      &lt;chr&gt; &quot;CL27771&quot;, &quot;CL27453&quot;, &quot;CL27453&quot;, &quot;CL27453&quot;, &quot;CL28048&quot;…
+## $ presenceNoted    &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALS…
+## $ hasComments      &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALS…
+## $ firstName        &lt;chr&gt; &quot;Samuel&quot;, &quot;Juanjo&quot;, &quot;Juanjo&quot;, &quot;Juanjo&quot;, &quot;Alfonso&quot;, &quot;C…
+## $ lastName         &lt;chr&gt; &quot;Aunión Díaz&quot;, &quot;Cipriano&quot;, &quot;Cipriano&quot;, &quot;Cipriano&quot;, &quot;C…
+## $ hasRichMedia     &lt;lgl&gt; FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALS…
+## $ exoticCategory   &lt;chr&gt; NA, NA, NA, NA, NA, NA, &quot;N&quot;, NA, NA, NA, NA, NA, NA, …</code></pre>
+<p>These data also contain observations from other species. For
+simplicity, we will assume here that non-reporting of the red kite in a
+location means that the red kite was not observed at that time. This is
+a stark simplification. We use this assumption here as we want to
+demonstrate occupancy models with comparably simple yet open-access
+data. The <code>rebird</code> package provides such very simple means
+for working with eBird data. However, please be aware that our
+oversimplified workflow does not correspond to best practices for
+working with eBird data. These best practices and more elaborate
+workflows are described here: <a
+href="https://cornelllabofornithology.github.io/ebird-best-practices"
+class="uri">https://cornelllabofornithology.github.io/ebird-best-practices</a>.</p>
+<p>Our goal is to prepare a dataset that can be used in occupancy
+modelling. This should contain information about repeat visits to
+different sites. For simplicity, we will compile a dataset that contains
+repeat visits in the three consecutive months April-June. Thereby, we
+rasterise the observation data at a roughly 5 km spatial resolution.</p>
+<p>First, we go through some preparatory steps:</p>
+<pre class="r"><code># Replace any observations from other species than the red kite with zero
+redkite_Esp_2022 &lt;- ebd_Esp_2022
+redkite_Esp_2022$howMany &lt;- ifelse(redkite_Esp_2022$speciesCode==species_code(&#39;Milvus milvus&#39;), redkite_Esp_2022$howMany, 0)</code></pre>
+<pre><code>## Red Kite (Milvus milvus): redkit1</code></pre>
+<pre class="r"><code># Add a column for red kite presence
+redkite_Esp_2022$RedKite &lt;- ifelse(redkite_Esp_2022$howMany &gt; 0, 1, 0)</code></pre>
+<p>Now, we use the <code>geodata</code> package to download a mask for
+Spain. For example, when downloading elevation data, we can specifically
+do so for a specific country. We download the data at a resolution of 30
+seconds, which roughly corresponds to 1 km at the equator. We then
+aggregate the data to a 2.5 minutes (roughly 5 km) spatial
+resolution.</p>
+<pre class="r"><code># Get mask for Spain
+library(geodata)
+library(terra)
+elev_Esp_1km &lt;- geodata::elevation_30s(country=&#39;ESP&#39;, path=&#39;data&#39;, mask=TRUE)
+
+# Aggregate to ca. 5km resolution
+elev_Esp_5km &lt;- terra::aggregate(elev_Esp_1km, fact=5)
+plot(elev_Esp_5km)</code></pre>
+<p><img src="Occ2_SpeciesData_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code># Create mask of spain
+mask_Esp_5km &lt;- elev_Esp_5km
+values(mask_Esp_5km)[!is.na(values(mask_Esp_5km))] &lt;- 1
+plot(mask_Esp_5km)</code></pre>
+<p><img src="Occ2_SpeciesData_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<p>We now extract the cell numbers and coordinates for our eBird data -
+at the spatial resolution of our <code>SpatRaster</code> object, meaning
+roughly 5 km.</p>
+<pre class="r"><code># Obtain coordinates and cell ID
+redkite_Esp_2022 &lt;- cbind(redkite_Esp_2022, terra::extract(x=mask_Esp_5km, y=redkite_Esp_2022[,c(&#39;lng&#39;,&#39;lat&#39;)], ID=F, cells=T, xy=T))
+
+# Remove NA cells
+redkite_Esp_2022 &lt;- redkite_Esp_2022[!is.na(redkite_Esp_2022$ESP_elv_msk),]</code></pre>
+<p>We now start reshaping our dataset. We want to obtain a dataset with
+a row for each location and different columns for each repeat visit.</p>
+<pre class="r"><code># Make smaller dataset with fewer columns
+redkite_det_Esp_2022 &lt;- redkite_Esp_2022[,c(&#39;obsDt&#39;,&#39;cell&#39;,&#39;x&#39;,&#39;y&#39;,&#39;RedKite&#39;)]
+
+# Add columns for day of year, week, and month
+library(lubridate)</code></pre>
+<pre><code>## Loading required package: timechange</code></pre>
+<pre><code>## 
+## Attaching package: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:terra&#39;:
+## 
+##     intersect, union</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     date, intersect, setdiff, union</code></pre>
+<pre class="r"><code>redkite_det_Esp_2022$yday &lt;- yday(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
+redkite_det_Esp_2022$week &lt;- week(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
+redkite_det_Esp_2022$month &lt;- month(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
+
+# Remove duplicate rows (rows with exact same cell, yday, and presence/absence of red kite)
+redkite_det_Esp_2022 &lt;- redkite_det_Esp_2022[!duplicated(redkite_det_Esp_2022[,-1]),]
+
+# We now may have some rows left that report presences and absences for the exact same cell and month:
+sum(duplicated(redkite_det_Esp_2022[,c(&#39;cell&#39;,&#39;month&#39;)]))</code></pre>
+<pre><code>## [1] 4081</code></pre>
+<pre class="r"><code>duplos &lt;- which(duplicated(redkite_det_Esp_2022[,c(&#39;cell&#39;,&#39;month&#39;)]))
+
+# Loop through the entries with the same cell and month combination: 
+for (i in duplos) {
+  cell_i = redkite_det_Esp_2022[i,&#39;cell&#39;]
+  month_i = redkite_det_Esp_2022[i,&#39;month&#39;]
+  
+  # If we have a presence and an absence observation on the same day and location, we assume it is a presence:
+  redkite_det_Esp_2022[redkite_det_Esp_2022$cell==cell_i &amp; redkite_det_Esp_2022$month==month_i, &#39;RedKite&#39;] &lt;- 1
+} 
+
+# Remove remaining duplicate rows (only filtering for cells and months):
+redkite_det_Esp_2022 &lt;- redkite_det_Esp_2022[!duplicated(redkite_det_Esp_2022[,c(2:5,8)]),]</code></pre>
+<p>The hard work is done now and we have a dataset that only has unique
+cell-by-month combinations with sightings and non-sightings of the red
+kite. Last, we only want to keep those cells that were visited in each
+of the three months.</p>
+<pre class="r"><code># Find those cells with more than 2 visits:
+cell_keep &lt;- as.numeric(
+  names(table(redkite_det_Esp_2022$cell))[
+    table(redkite_det_Esp_2022$cell)&gt;2
+    ])
+
+# Remove cells with 2 visits or less:
+redkite_det_Esp_2022 &lt;- redkite_det_Esp_2022[redkite_det_Esp_2022$cell %in% cell_keep,]</code></pre>
+<p>Finally, we reshape our dataset from a long format (with all repeat
+visits in rows) to a wide format (with separate columns for the repeat
+visits):</p>
+<pre class="r"><code># Reshape the dataset from long to wide format:
+redkite_det_Esp_2022_wide &lt;- redkite_det_Esp_2022[,c(2:5,8)] %&gt;%
+  pivot_wider(
+    names_from = month,
+    values_from = RedKite,
+    names_prefix = &#39;month&#39;,
+    values_fill = NA
+  )
+
+# How often was the red kite observed over the three visits?
+table(rowSums(redkite_det_Esp_2022_wide[,4:6]))</code></pre>
+<pre><code>## 
+##   0   1   2   3 
+##  44  83 108 153</code></pre>
+<p>Let’s take a look at the resulting map.</p>
+<pre class="r"><code># plot mask of Spain
+plot(mask_Esp_5km, col=&#39;grey90&#39;, legend=F)
+
+# Add points
+points(redkite_det_Esp_2022_wide[,2:3],pch=19,col=c(&#39;black&#39;,&#39;yellow&#39;,&#39;orange&#39;,&#39;red&#39;)[as.factor(rowSums(redkite_det_Esp_2022_wide[,4:6]))], cex=0.3)
+
+legend(&#39;bottomright&#39;, legend=0:3, pch=19, col=c(&#39;black&#39;,&#39;yellow&#39;,&#39;orange&#39;,&#39;red&#39;), bty=&#39;n&#39;)</code></pre>
+<p><img src="Occ2_SpeciesData_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Finally, save your data, for example by writing the final data frame
+to file or by saving the R object(s).</p>
+<pre class="r"><code>save(redkite_det_Esp_2022_wide,file=&#39;data/redkite_det_Esp_2022_wide.RData&#39;)</code></pre>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Guillera-Arroita2017" class="csl-entry">
+Guillera-Arroita, Gurutzeta. 2017. <span>“Modelling of Species
+Distributions, Range Dynamics and Communities Under Imperfect Detection:
+Advances, Challenges and Opportunities.”</span> <em>Ecography</em> 40
+(2): 281–95. <a
+href="https://doi.org/10.1111/ecog.02445">https://doi.org/10.1111/ecog.02445</a>.
+</div>
+<div id="ref-Kery2015" class="csl-entry">
+Kéry, Marc, and J. Andrew Royle. 2015. <em>Applied Hierarchical Modeling
+in Ecology: Analysis of Distribution, Abundance and Species Richness in
+r and BUGS</em>. Elsevier.
+</div>
+</div>
+</div>
+
+<!DOCTYPE html>
+<html>
+
+<br>
+<hr />
+<div id="footer">
+<p>Damaris Zurell, Guillermo Fandos, Anne-Kathleen Malchow, Jette Reeg 2021-2023 <a href="http://creativecommons.org/licenses/by/4.0/" >(CC BY 4.0)</a>.  </p>
+</div>
+
+</html>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
