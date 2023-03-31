@@ -361,6 +361,18 @@ div.tocify {
     <li>
       <a href="Occ2_SpeciesData.html">2. Species data in R</a>
     </li>
+    <li>
+      <a href="Occ3_EnvData.html">3. Environmental data in R</a>
+    </li>
+    <li>
+      <a href="Occ4_SimpleOccModel.html">4. Simple occupancy models</a>
+    </li>
+    <li>
+      <a href="Occ5_EvalPred.html">5. Occupancy models: evaluation &amp; prediction</a>
+    </li>
+    <li>
+      <a href="Occ6_DynamicOccModel.html">6. Dynamic occupancy models</a>
+    </li>
   </ul>
 </li>
 <li class="dropdown">
@@ -649,17 +661,8 @@ a row for each location and different columns for each repeat visit.</p>
 redkite_det_Esp_2022 &lt;- redkite_Esp_2022[,c(&#39;obsDt&#39;,&#39;cell&#39;,&#39;x&#39;,&#39;y&#39;,&#39;RedKite&#39;)]
 
 # Add columns for day of year, week, and month
-library(lubridate)</code></pre>
-<pre><code>## Loading required package: timechange</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:terra&#39;:
-## 
-##     intersect, union</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre class="r"><code>redkite_det_Esp_2022$yday &lt;- yday(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
+library(lubridate)
+redkite_det_Esp_2022$yday &lt;- yday(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
 redkite_det_Esp_2022$week &lt;- week(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
 redkite_det_Esp_2022$month &lt;- month(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
 
