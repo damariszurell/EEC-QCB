@@ -13,7 +13,7 @@
 
 <title>Species data</title>
 
-<script src="site_libs/header-attrs-2.19/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -35,8 +35,8 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -454,17 +454,16 @@ and models can considerable bias estimates of species distribution and
 can underestimate occupancy, obscure trends in occupancy, or obscure
 relationships with covariates.</p>
 <p>Occupancy (or occupancy-detection) models can deal with imperfect
-detection in species distribution modelling (<span
-class="citation">Guillera-Arroita (2017)</span>, <span
-class="citation">Kéry and Royle (2015)</span>). This is done by
-quantifying the detectability, the probability that at least one
-individual is detected in a particular sampling effort, conditional to
-the species being present in the area of interest during sampling. To be
-able to estimate the effect of imperfect detection we need to perform
-several independent surveys of the same site (temporal or spatial
-replication). Repeat surveys allow us to answer the question: “How often
-do we fail to detect the species in sites where we know it occurs as it
-had been detected on other survey occasions?”</p>
+detection in species distribution modelling <span class="citation">Kéry
+and Royle (2015)</span>. This is done by quantifying the detectability,
+the probability that at least one individual is detected in a particular
+sampling effort, conditional to the species being present in the area of
+interest during sampling. To be able to estimate the effect of imperfect
+detection we need to perform several independent surveys of the same
+site (temporal or spatial replication). Repeat surveys allow us to
+answer the question: “How often do we fail to detect the species in
+sites where we know it occurs as it had been detected on other survey
+occasions?”</p>
 <p>In the next few practicals, we will learn how to fit simple occupancy
 models, analyses these and make predictions. But first of all, we will
 take a closer look at the different kinds of data required for occupancy
@@ -495,22 +494,22 @@ with the entire taxonomy is stored internally:</p>
 <pre class="r"><code># Look at eBird taxonomy
 rebird:::tax</code></pre>
 <pre><code>## # A tibble: 16,753 × 15
-##    sciName comName speci…¹ categ…² taxon…³ bandi…⁴ comNa…⁵ sciNa…⁶ order famil…⁷
-##    &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;  
-##  1 Struth… Common… ostric2 species       1 &lt;NA&gt;    COOS    STCA    Stru… struth1
-##  2 Struth… Somali… ostric3 species       6 &lt;NA&gt;    SOOS    STMO    Stru… struth1
-##  3 Struth… Common… y00934  slash         7 &lt;NA&gt;    SOOS,C… STMO,S… Stru… struth1
-##  4 Rhea a… Greate… grerhe1 species       8 &lt;NA&gt;    GRRH    RHAM    Rhei… rheida1
-##  5 Rhea p… Lesser… lesrhe2 species      14 &lt;NA&gt;    LERH    RHPE    Rhei… rheida1
-##  6 Rhea p… Lesser… lesrhe4 issf         15 &lt;NA&gt;    LERH,LR RHPE    Rhei… rheida1
-##  7 Rhea p… Lesser… lesrhe3 issf         18 &lt;NA&gt;    LERH,LR RHPE    Rhei… rheida1
-##  8 Nothoc… Tawny-… tabtin1 species      19 &lt;NA&gt;    TBTI    NOJU    Tina… tinami1
-##  9 Nothoc… Highla… higtin1 species      20 HITI    &lt;NA&gt;    NOBO    Tina… tinami1
-## 10 Nothoc… Highla… higtin2 issf         21 &lt;NA&gt;    HT,HITI NOBO    Tina… tinami1
-## # … with 16,743 more rows, 5 more variables: familyComName &lt;chr&gt;,
-## #   familySciName &lt;chr&gt;, reportAs &lt;chr&gt;, extinct &lt;lgl&gt;, extinctYear &lt;int&gt;, and
-## #   abbreviated variable names ¹​speciesCode, ²​category, ³​taxonOrder,
-## #   ⁴​bandingCodes, ⁵​comNameCodes, ⁶​sciNameCodes, ⁷​familyCode</code></pre>
+##    sciName     comName speciesCode category taxonOrder bandingCodes comNameCodes
+##    &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;        &lt;chr&gt;       
+##  1 Struthio c… Common… ostric2     species           1 &lt;NA&gt;         COOS        
+##  2 Struthio m… Somali… ostric3     species           6 &lt;NA&gt;         SOOS        
+##  3 Struthio c… Common… y00934      slash             7 &lt;NA&gt;         SOOS,COOS   
+##  4 Rhea ameri… Greate… grerhe1     species           8 &lt;NA&gt;         GRRH        
+##  5 Rhea penna… Lesser… lesrhe2     species          14 &lt;NA&gt;         LERH        
+##  6 Rhea penna… Lesser… lesrhe4     issf             15 &lt;NA&gt;         LERH,LR     
+##  7 Rhea penna… Lesser… lesrhe3     issf             18 &lt;NA&gt;         LERH,LR     
+##  8 Nothocercu… Tawny-… tabtin1     species          19 &lt;NA&gt;         TBTI        
+##  9 Nothocercu… Highla… higtin1     species          20 HITI         &lt;NA&gt;        
+## 10 Nothocercu… Highla… higtin2     issf             21 &lt;NA&gt;         HT,HITI     
+## # ℹ 16,743 more rows
+## # ℹ 8 more variables: sciNameCodes &lt;chr&gt;, order &lt;chr&gt;, familyCode &lt;chr&gt;,
+## #   familyComName &lt;chr&gt;, familySciName &lt;chr&gt;, reportAs &lt;chr&gt;, extinct &lt;lgl&gt;,
+## #   extinctYear &lt;int&gt;</code></pre>
 <p>We can also find the species code for a specific species. The
 function <code>species_code()</code> requires the scientific name of the
 species. Let’s look up the species code for the red kite (<em>Milvus
@@ -536,10 +535,10 @@ ebirdregion(loc = &#39;WS&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBI
 use the function <code>ebirdhistorical()</code>.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
-## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+## ✔ ggplot2 3.4.2      ✔ purrr   1.0.1 
+## ✔ tibble  3.2.1      ✔ dplyr   1.0.10
 ## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
-## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+## ✔ readr   2.1.4      ✔ forcats 0.5.2 
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
@@ -548,16 +547,15 @@ use the function <code>ebirdhistorical()</code>.</p>
 ebirdhistorical(loc = &#39;ES&#39;, date=&#39;2022-06-01&#39;, fieldSet=&#39;full&#39;, key=MY_EBIRD_KEY) %&gt;%
   filter(speciesCode==&#39;redkit1&#39;)</code></pre>
 <pre><code>## # A tibble: 1 × 28
-##   speciesCode comName  sciName   locId locName obsDt howMany   lat   lng obsVa…¹
-##   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;  
-## 1 redkit1     Red Kite Milvus m… L190… Arroyo… 2022…       2  40.9 -5.67 TRUE   
-## # … with 18 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;,
-## #   subId &lt;chr&gt;, subnational1Code &lt;chr&gt;, subnational1Name &lt;chr&gt;,
-## #   countryCode &lt;chr&gt;, countryName &lt;chr&gt;, userDisplayName &lt;chr&gt;, obsId &lt;chr&gt;,
-## #   checklistId &lt;chr&gt;, presenceNoted &lt;lgl&gt;, hasComments &lt;lgl&gt;, firstName &lt;chr&gt;,
-## #   lastName &lt;chr&gt;, hasRichMedia &lt;lgl&gt;, subnational2Code &lt;chr&gt;,
-## #   subnational2Name &lt;chr&gt;, exoticCategory &lt;chr&gt;, and abbreviated variable name
-## #   ¹​obsValid</code></pre>
+##   speciesCode comName  sciName  locId locName obsDt howMany   lat   lng obsValid
+##   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;   
+## 1 redkit1     Red Kite Milvus … L190… Arroyo… 2022…       2  40.9 -5.67 TRUE    
+## # ℹ 18 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;, subId &lt;chr&gt;,
+## #   subnational1Code &lt;chr&gt;, subnational1Name &lt;chr&gt;, countryCode &lt;chr&gt;,
+## #   countryName &lt;chr&gt;, userDisplayName &lt;chr&gt;, obsId &lt;chr&gt;, checklistId &lt;chr&gt;,
+## #   presenceNoted &lt;lgl&gt;, hasComments &lt;lgl&gt;, firstName &lt;chr&gt;, lastName &lt;chr&gt;,
+## #   hasRichMedia &lt;lgl&gt;, subnational2Code &lt;chr&gt;, subnational2Name &lt;chr&gt;,
+## #   exoticCategory &lt;chr&gt;</code></pre>
 <p>The function <code>ebirdhistorical()</code> only downloads one day at
 a time. Thus, if we want to download data for an extended period, we
 have to do this step by step. Below, we use the function
