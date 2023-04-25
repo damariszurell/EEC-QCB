@@ -657,10 +657,8 @@ in occupancy. For simplicity, we focus only on two site covariates
 Later, we will learn how deal with multiple site (or survey)
 covariates.</p>
 <p>We first load our data set containing both detection data and
-environmental variables and create an <code>unmarked</code> data object.
-To help stabilize the numerical optimisation algorithm, we recommend
-standardising the covariates. This can easily be done using the base
-function <code>scale()</code>.</p>
+environmental variables and create an <code>unmarked</code> data
+object.</p>
 <pre class="r"><code># Load species data from Practical 3:
 load(&#39;data/redkite_det_env_Esp_2022.RData&#39;)
 
@@ -686,6 +684,15 @@ head(redkite_det_env_Esp_2022)</code></pre>
 ## 4 581.84 102.36   1.00 69.60263 279.48  20.48  23.08 253.96 0.068260
 ## 5 425.24  55.68  10.88 41.12534 155.56  49.76  49.76 126.56 0.191820
 ## 6 522.16  92.16   2.00 68.17232 248.60  21.16  25.00 222.12 0.257988</code></pre>
+<!-- ```{r echo=F} -->
+<!-- # Load species data from Practical 3: -->
+<!-- load('data/redkite_det_env_Esp_2022_v2.RData') -->
+<!-- redkite_det_env_Esp_2022 <- redkite_det_env_Esp_2022_v2 -->
+<!-- head(redkite_det_env_Esp_2022) -->
+<!-- ``` -->
+<p>To help stabilize the numerical optimisation algorithm, we recommend
+standardising the covariates. This can easily be done using the base
+function <code>scale()</code>.</p>
 <pre class="r"><code># Standardise all covariates to have a mean=0 and standard deviation sd=1:
 redkite_det_env_Esp_2022[,-c(1:7)] &lt;- scale(redkite_det_env_Esp_2022[,-c(1:7)])
 
@@ -963,7 +970,7 @@ cor_mat &lt;- cor(occ_env_redkite@siteCovs, method=&#39;spearman&#39;)
 # We can visualise this correlation matrix. For better visibility, 
 # we plot the correlation coefficients as percentages.
 corrplot.mixed(cor_mat, tl.pos=&#39;lt&#39;, tl.cex=0.6, number.cex=0.5, addCoefasPercent=T)</code></pre>
-<p><img src="Occ4_SimpleOccModel_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="Occ4_SimpleOccModel_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>If no prior knowledge is available on the importance of different
 predictors, then <span class="citation">Dormann et al. (2013)</span>
 suggest to assess univariate variable importance in terms of AIC (Akaike
@@ -1017,6 +1024,9 @@ the limiting number.</p>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>
+<li>Have you downloaded any other land cover data in the previous
+tutorial? Then also try these out. For example, grassland might be more
+important for the red kite than tree cover.</li>
 <li>Define a full model with the weakly correlated variables including
 their linear and quadratic terms. Adhere to the rule of thumb for the
 number of covariates allowed in the model.</li>

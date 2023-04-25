@@ -493,7 +493,9 @@ global climate data (function <code>worldclim_global()</code>) or
 climate data for a specific tile (function <code>worldclim_tile()</code>
 - tiles come at 30 x 30 degree spatial extent). Here, we are going to
 download climate data for a specific country.</p>
-<pre class="r"><code># Download global bioclimatic data from worldclim (you may have to set argument &#39;download=T&#39; for first download, if &#39;download=F&#39; it will attempt to read from file):
+<pre class="r"><code>library(terra)
+
+# Download global bioclimatic data from worldclim (you may have to set argument &#39;download=T&#39; for first download, if &#39;download=F&#39; it will attempt to read from file):
 clim_1km &lt;- geodata::worldclim_country(country=&#39;ESP&#39;, var = &#39;bio&#39;, download = F, path = &#39;data&#39;)
 
 # Now, let&#39;s look at the data:
@@ -636,18 +638,14 @@ plot(trees_5km)</code></pre>
 resolution, we can stack them into a multi-layer object.</p>
 <pre class="r"><code># Produce the multi-layer environmental data object:
 env_cur &lt;- c(elev_Esp_5km, clim_5km, trees_5km)</code></pre>
-<p>This seems to produce an error. In such case, we need to inspect all
-<code>SpatRaster</code> objects to ensure that they have the same
-extents and numbers of rows and columns. Here, the elevation layer seems
-to have one column less than the others. We can solve this by either
-extending or cropping the layers.</p>
-<pre class="r"><code># Produce the multi-layer environmental data object after extending the elevation layer:
-env_cur &lt;- c(terra::extend(elev_Esp_5km, clim_5km), clim_5km, trees_5km)
-
-# OR
-
-# Produce the multi-layer environmental data object after cropping climate and land use to the extent of the elevation layer:
-env_cur &lt;- c(elev_Esp_5km, terra::crop(clim_5km, elev_Esp_5km), terra::crop(trees_5km, elev_Esp_5km))</code></pre>
+<!-- This seems to produce an error. In such case, we need to inspect all `SpatRaster` objects to ensure that they have the same extents and numbers of rows and columns. Here, the elevation layer seems to have one column less than the others. We can solve this by either extending or cropping the layers. -->
+<!-- ```{r} -->
+<!-- # Produce the multi-layer environmental data object after extending the elevation layer: -->
+<!-- env_cur <- c(terra::extend(elev_Esp_5km, clim_5km), clim_5km, trees_5km) -->
+<!-- # OR -->
+<!-- # Produce the multi-layer environmental data object after cropping climate and land use to the extent of the elevation layer: -->
+<!-- env_cur <- c(elev_Esp_5km, terra::crop(clim_5km, elev_Esp_5km), terra::crop(trees_5km, elev_Esp_5km)) -->
+<!-- ``` -->
 </div>
 <div id="joining-species-and-environmental-data" class="section level1"
 number="4">
