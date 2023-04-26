@@ -35,6 +35,10 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
 <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -421,6 +425,10 @@ div.tocify {
 </div>
 
 
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
 <hr />
 <div class="alert alert-info">
 <p><strong>RStudio project</strong></p>
@@ -529,8 +537,22 @@ provides the most recent sightings (between 1 and 30 days; 14 days per
 default). For the query, we have to provide the personal access token
 for the API.</p>
 <pre class="r"><code># Find all eBird reportings of red kite in Spain in the last 30 days: 
-ebirdregion(loc = &#39;WS&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBIRD_KEY)</code></pre>
-<pre><code>## # A tibble: 0 × 0</code></pre>
+ebirdregion(loc = &#39;ES&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBIRD_KEY)</code></pre>
+<pre><code>## # A tibble: 2,069 × 13
+##    speciesCode comName sciName locId locName obsDt howMany   lat    lng obsValid
+##    &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt;   
+##  1 redkit1     Red Ki… Milvus… L153… Sarga-… 2023…       1  42.2 -0.393 TRUE    
+##  2 redkit1     Red Ki… Milvus… L237… Peñadi… 2023…       1  42.0 -1.60  TRUE    
+##  3 redkit1     Red Ki… Milvus… L360… Alzuza  2023…       1  42.8 -1.57  TRUE    
+##  4 redkit1     Red Ki… Milvus… L581… Trujil… 2023…       1  39.4 -5.86  TRUE    
+##  5 redkit1     Red Ki… Milvus… L218… Vía si… 2023…      NA  42.0 -1.60  TRUE    
+##  6 redkit1     Red Ki… Milvus… L551… Valder… 2023…       2  42.2 -5.91  TRUE    
+##  7 redkit1     Red Ki… Milvus… L485… Barlue… 2023…       1  42.2 -0.339 TRUE    
+##  8 redkit1     Red Ki… Milvus… L100… Torren… 2023…       1  39.9  2.96  TRUE    
+##  9 redkit1     Red Ki… Milvus… L238… Vía si… 2023…       1  41.4 -0.637 TRUE    
+## 10 redkit1     Red Ki… Milvus… L548… Sª de … 2023…       2  40.7 -4.49  TRUE    
+## # ℹ 2,059 more rows
+## # ℹ 3 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;, subId &lt;chr&gt;</code></pre>
 <p>To access periods that are longer away than the last 30 days, we can
 use the function <code>ebirdhistorical()</code>.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
@@ -649,27 +671,30 @@ plot(mask_Esp_5km)</code></pre>
 at the spatial resolution of our <code>SpatRaster</code> object, meaning
 roughly 5 km.</p>
 <pre class="r"><code># Obtain coordinates and cell ID
-redkite_Esp_2022 &lt;- cbind(redkite_Esp_2022, terra::extract(x=mask_Esp_5km, y=redkite_Esp_2022[,c(&#39;lng&#39;,&#39;lat&#39;)], ID=F, cells=T, xy=T))
-
-# Remove NA cells
-redkite_Esp_2022 &lt;- redkite_Esp_2022[!is.na(redkite_Esp_2022$ESP_elv_msk),]</code></pre>
+redkite_Esp_2022 &lt;- cbind(redkite_Esp_2022, terra::extract(x=mask_Esp_5km, y=redkite_Esp_2022[,c(&#39;lng&#39;,&#39;lat&#39;)], ID=F, cells=T, xy=T))</code></pre>
 <p>We now start reshaping our dataset. We want to obtain a dataset with
 a row for each location and different columns for each repeat visit.</p>
 <pre class="r"><code># Make smaller dataset with fewer columns
 redkite_det_Esp_2022 &lt;- redkite_Esp_2022[,c(&#39;obsDt&#39;,&#39;cell&#39;,&#39;x&#39;,&#39;y&#39;,&#39;RedKite&#39;)]
 
-# Add columns for day of year, week, and month
+# Remove NA cells
+redkite_det_Esp_2022 &lt;- na.exclude(redkite_det_Esp_2022)
+
+# How many presences do we have in the data set?
+sum(redkite_det_Esp_2022$RedKite)</code></pre>
+<pre><code>## [1] 86</code></pre>
+<pre class="r"><code># Add columns for day of year, week, and month
 library(lubridate)
 redkite_det_Esp_2022$yday &lt;- yday(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
 redkite_det_Esp_2022$week &lt;- week(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
 redkite_det_Esp_2022$month &lt;- month(as.Date(redkite_det_Esp_2022$obsDt, format=&quot;%Y-%m-%d&quot;))
 
-# Remove duplicate rows (rows with exact same cell, yday, and presence/absence of red kite)
-redkite_det_Esp_2022 &lt;- redkite_det_Esp_2022[!duplicated(redkite_det_Esp_2022[,-1]),]
+# Remove duplicate rows that have exact same cell, month, and presence/absence information (meaning only ZEROs or ONEs)
+redkite_det_Esp_2022 &lt;- redkite_det_Esp_2022[!duplicated(redkite_det_Esp_2022[,c(2,5,8)]),]
 
-# We now may have some rows left that report presences and absences for the exact same cell and month:
+# We now may have some rows left that report contradicting information on presences and absences for the exact same cell and month:
 sum(duplicated(redkite_det_Esp_2022[,c(&#39;cell&#39;,&#39;month&#39;)]))</code></pre>
-<pre><code>## [1] 4081</code></pre>
+<pre><code>## [1] 69</code></pre>
 <pre class="r"><code>duplos &lt;- which(duplicated(redkite_det_Esp_2022[,c(&#39;cell&#39;,&#39;month&#39;)]))
 
 # Loop through the entries with the same cell and month combination: 
@@ -681,37 +706,40 @@ for (i in duplos) {
   redkite_det_Esp_2022[redkite_det_Esp_2022$cell==cell_i &amp; redkite_det_Esp_2022$month==month_i, &#39;RedKite&#39;] &lt;- 1
 } 
 
-# Remove remaining duplicate rows (only filtering for cells and months):
-redkite_det_Esp_2022 &lt;- redkite_det_Esp_2022[!duplicated(redkite_det_Esp_2022[,c(2:5,8)]),]</code></pre>
+# Remove remaining duplicates with exact same cell, month, and presence/absence information (meaning only ZEROs or ONEs) - Note that new duplicates may have arisen as we have overwritten some presence/absence information in the previous loop
+redkite_det_Esp_2022 &lt;- redkite_det_Esp_2022[!duplicated(redkite_det_Esp_2022[,c(2,5,8)]),]</code></pre>
 <p>The hard work is done now and we have a dataset that only has unique
 cell-by-month combinations with sightings and non-sightings of the red
-kite. Last, we only want to keep those cells that were visited in each
-of the three months.</p>
-<pre class="r"><code># Find those cells with more than 2 visits:
-cell_keep &lt;- as.numeric(
-  names(table(redkite_det_Esp_2022$cell))[
-    table(redkite_det_Esp_2022$cell)&gt;2
-    ])
-
-# Remove cells with 2 visits or less:
-redkite_det_Esp_2022 &lt;- redkite_det_Esp_2022[redkite_det_Esp_2022$cell %in% cell_keep,]</code></pre>
+kite.
+<!-- Last, we only want to keep those cells that were visited in each of the three months.  --></p>
+<!-- ```{r} -->
+<!-- # Find those cells with more than 2 visits: -->
+<!-- cell_keep <- as.numeric( -->
+<!--   names(table(redkite_det_Esp_2022$cell))[ -->
+<!--     table(redkite_det_Esp_2022$cell)>2] -->
+<!--   ) -->
+<!-- # Remove cells with 2 visits or less: -->
+<!-- redkite_det_Esp_2022 <- redkite_det_Esp_2022[redkite_det_Esp_2022$cell %in% cell_keep,] -->
+<!-- ``` -->
 <p>Finally, we reshape our dataset from a long format (with all repeat
 visits in rows) to a wide format (with separate columns for the repeat
-visits):</p>
+visits). If the red kite was not observed in one of the visits, we
+assume that this is a non-detection (indicated by argument
+<code>values_fill = 0</code>).</p>
 <pre class="r"><code># Reshape the dataset from long to wide format:
 redkite_det_Esp_2022_wide &lt;- redkite_det_Esp_2022[,c(2:5,8)] %&gt;%
   pivot_wider(
     names_from = month,
     values_from = RedKite,
     names_prefix = &#39;month&#39;,
-    values_fill = NA
+    values_fill = 0
   )
 
 # How often was the red kite observed over the three visits?
 table(rowSums(redkite_det_Esp_2022_wide[,4:6]))</code></pre>
 <pre><code>## 
-##   0   1   2   3 
-##  44  83 108 153</code></pre>
+##    0    1    2    3 
+## 3623   73    2    1</code></pre>
 <p>Let’s take a look at the resulting map.</p>
 <pre class="r"><code># plot mask of Spain
 plot(mask_Esp_5km, col=&#39;grey90&#39;, legend=F)
@@ -720,7 +748,7 @@ plot(mask_Esp_5km, col=&#39;grey90&#39;, legend=F)
 points(redkite_det_Esp_2022_wide[,2:3],pch=19,col=c(&#39;black&#39;,&#39;yellow&#39;,&#39;orange&#39;,&#39;red&#39;)[as.factor(rowSums(redkite_det_Esp_2022_wide[,4:6]))], cex=0.3)
 
 legend(&#39;bottomright&#39;, legend=0:3, pch=19, col=c(&#39;black&#39;,&#39;yellow&#39;,&#39;orange&#39;,&#39;red&#39;), bty=&#39;n&#39;)</code></pre>
-<p><img src="Occ2_SpeciesData_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="Occ2_SpeciesData_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <p>Finally, save your data, for example by writing the final data frame
 to file or by saving the R object(s).</p>
 <pre class="r"><code>save(redkite_det_Esp_2022_wide,file=&#39;data/redkite_det_Esp_2022_wide.RData&#39;)</code></pre>
