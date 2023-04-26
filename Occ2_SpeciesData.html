@@ -538,7 +538,7 @@ default). For the query, we have to provide the personal access token
 for the API.</p>
 <pre class="r"><code># Find all eBird reportings of red kite in Spain in the last 30 days: 
 ebirdregion(loc = &#39;ES&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBIRD_KEY)</code></pre>
-<pre><code>## # A tibble: 2,069 × 13
+<pre><code>## # A tibble: 2,064 × 13
 ##    speciesCode comName sciName locId locName obsDt howMany   lat    lng obsValid
 ##    &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt;   
 ##  1 redkit1     Red Ki… Milvus… L153… Sarga-… 2023…       1  42.2 -0.393 TRUE    
@@ -551,7 +551,7 @@ ebirdregion(loc = &#39;ES&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBI
 ##  8 redkit1     Red Ki… Milvus… L100… Torren… 2023…       1  39.9  2.96  TRUE    
 ##  9 redkit1     Red Ki… Milvus… L238… Vía si… 2023…       1  41.4 -0.637 TRUE    
 ## 10 redkit1     Red Ki… Milvus… L548… Sª de … 2023…       2  40.7 -4.49  TRUE    
-## # ℹ 2,059 more rows
+## # ℹ 2,054 more rows
 ## # ℹ 3 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;, subId &lt;chr&gt;</code></pre>
 <p>To access periods that are longer away than the last 30 days, we can
 use the function <code>ebirdhistorical()</code>.</p>
@@ -758,10 +758,10 @@ to file or by saving the R object(s).</p>
 <li>Pick a species of your own choice and prepare the repeated survey
 data as above. Also prepare the map for illustration.</li>
 <li>To make this task a little bit more difficult, you may choose also a
-different country. But be aware that eBird data tend be sparse in Europe
-(except Spain). They are much more used in US. Should you choose US, you
-may want to consider focusing on a specific state as the data eBird
-volume for US can be massive.</li>
+different country. But be aware that eBird data tend to be sparse in
+Europe (except Spain). They are much more used in US. Should you choose
+US, you may want to consider focusing on a specific state as the data
+eBird volume for US can be massive.</li>
 </ul>
 </div>
 </div>

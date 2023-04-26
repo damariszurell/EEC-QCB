@@ -35,6 +35,10 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
 <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -421,6 +425,10 @@ div.tocify {
 </div>
 
 
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
 <hr />
 <div class="alert alert-info">
 <p><strong>RStudio project</strong></p>
@@ -664,27 +672,27 @@ extract relevant environmental data for our species records.</p>
 # Coordinates are always provided as x/y format, in our case lon/lat.
 head(terra::extract(x = env_cur, 
     y = data.frame(redkite_det_Esp_2022_wide[,c(&#39;x&#39;,&#39;y&#39;)])))</code></pre>
-<pre><code>##   ID ESP_elv    bio_1     bio_2    bio_3    bio_4  bio_5 bio_6  bio_7     bio_8
-## 1  1   11.96 18.62383 11.624333 41.09237 588.1969 34.452 6.164 28.288 12.606667
-## 2  2  627.32 14.45633 11.036667 36.74473 680.4317 31.768 1.732 30.036 10.330000
-## 3  3   27.56 18.14633 11.877333 41.94698 576.6686 34.084 5.768 28.316 12.310000
-## 4  4   34.08 17.94817  9.913667 40.85036 509.7639 31.368 7.100 24.268 12.980667
-## 5  5  715.32 14.03783 10.963667 36.62693 680.0941 31.348 1.416 29.932  9.904667
-## 6  6   11.16 17.96250 11.380333 42.20560 548.9442 32.964 6.000 26.964 12.456000
-##      bio_9   bio_10   bio_11 bio_12 bio_13 bio_14   bio_15 bio_16 bio_17 bio_18
-## 1 26.03933 26.18200 11.78667 536.20  93.72   2.00 67.06034 252.28  22.20  27.12
-## 2 23.36600 23.36600  6.77200 397.36  50.52  10.00 41.05074 144.00  47.32  47.32
-## 3 25.41333 25.56267 11.45000 537.08  93.84   2.00 66.61317 252.08  22.92  27.04
-## 4 24.23400 24.63333 12.08800 581.84 102.36   1.00 69.60263 279.48  20.48  23.08
-## 5 22.95333 22.95333  6.38000 425.24  55.68  10.88 41.12534 155.56  49.76  49.76
-## 6 24.81667 25.03133 11.57200 522.16  92.16   2.00 68.17232 248.60  21.16  25.00
-##   bio_19    trees
-## 1 223.76 0.088260
-## 2 119.16 0.525668
-## 3 224.84 0.084180
-## 4 253.96 0.068260
-## 5 126.56 0.191820
-## 6 222.12 0.257988</code></pre>
+<pre><code>##   ID ESP_elv    bio_1    bio_2    bio_3    bio_4  bio_5  bio_6  bio_7     bio_8
+## 1  1  873.60 12.48100 12.44867 40.39612 652.8463 30.260 -0.556 30.816 14.252000
+## 2  2   49.76 17.61467 10.27800 42.05346 505.6223 31.052  6.612 24.440 12.627333
+## 3  3  757.20 15.28933 13.04867 41.30411 651.4901 33.580  1.988 31.592  8.796667
+## 4  4   11.96 18.62383 11.62433 41.09237 588.1969 34.452  6.164 28.288 12.606667
+## 5  5  519.84 15.57117 13.56100 41.67480 662.7516 34.684  2.144 32.540  8.912000
+## 6  6  632.68 14.57117 11.65033 37.61579 689.9860 32.448  1.476 30.972 10.459333
+##       bio_9   bio_10    bio_11 bio_12 bio_13 bio_14   bio_15 bio_16 bio_17
+## 1  6.062667 21.03600  5.152000 395.16  52.40  20.12 30.81702 134.12  70.40
+## 2 23.904667 24.12467 11.747333 483.24  84.36   2.00 69.50433 232.60  18.04
+## 3 23.770667 23.77067  7.942000 412.24  57.00   3.04 53.32369 161.84  24.96
+## 4 26.039333 26.18200 11.786667 536.20  93.72   2.00 67.06034 252.28  22.20
+## 5 24.104667 24.17133  8.049333 629.84 102.32   5.00 60.55848 277.36  34.04
+## 6 23.452000 23.60667  6.808000 366.16  44.76  11.00 35.85765 122.96  48.56
+##   bio_18 bio_19    trees
+## 1  85.24  77.24 0.849488
+## 2  21.04 205.48 0.650424
+## 3  24.96 153.36 0.217108
+## 4  27.12 223.76 0.088260
+## 5  37.20 250.72 0.015780
+## 6  52.60 101.68 0.013248</code></pre>
 <pre class="r"><code># Finally, we put species and environmental data into the same data frame:
 redkite_det_env_Esp_2022 &lt;- cbind(redkite_det_Esp_2022_wide, terra::extract(x = env_cur, y = data.frame(redkite_det_Esp_2022_wide[,c(&#39;x&#39;,&#39;y&#39;)])))</code></pre>
 <p>We now have to inspect the data again to see whether we have any
