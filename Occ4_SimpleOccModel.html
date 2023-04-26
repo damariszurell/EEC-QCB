@@ -35,6 +35,10 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
 <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -421,6 +425,10 @@ div.tocify {
 </div>
 
 
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
 <hr />
 <div class="alert alert-info">
 <p><strong>RStudio project</strong></p>
@@ -544,35 +552,91 @@ class="section level1" number="2">
 <h1><span class="header-section-number">2</span> The simplest occupancy
 models (without covariates)</h1>
 <p>We have already prepared a dataset with repeat observations for the
-red kite in Practical 2. These data contain the observed
-presence/absence of red kites in Spain in 5 km cells for the months
-April to June.</p>
-<pre class="r"><code># Load species data from Practical 2:
-load(&#39;data/redkite_det_Esp_2022_wide.RData&#39;)
+red kite in Practical 2 and merged it with environmental data in
+Practical 3. These data contain the observed detection/non-detection of
+red kites in Spain in 5 km cells for the months April to June. I have
+further spatially thinned the data; you can download the resulting
+dataset <a href="data/stork_env_thinned.RData">here</a>. Also download
+the 5km mask of Spain (we created this in Practical 2, available <a
+href="data/mask_Esp_5km.tif">here</a>). Please store all data in your
+“data” folder.</p>
+<pre class="r"><code># Load species data:
+load(&#39;data/stork_env_thinned.RData&#39;)
 
-summary(redkite_det_Esp_2022_wide)</code></pre>
-<pre><code>##       cell             x                y             month4      
-##  Min.   : 2408   Min.   :-8.662   Min.   :36.05   Min.   :0.0000  
-##  1st Qu.:15309   1st Qu.:-5.704   1st Qu.:38.92   1st Qu.:0.0000  
-##  Median :27602   Median :-3.871   Median :40.50   Median :1.0000  
-##  Mean   :28614   Mean   :-3.445   Mean   :40.38   Mean   :0.6649  
-##  3rd Qu.:40414   3rd Qu.:-1.371   3rd Qu.:42.02   3rd Qu.:1.0000  
-##  Max.   :63829   Max.   : 3.087   Max.   :43.59   Max.   :1.0000  
-##      month5           month6      
-##  Min.   :0.0000   Min.   :0.0000  
-##  1st Qu.:0.0000   1st Qu.:0.0000  
-##  Median :1.0000   Median :1.0000  
-##  Mean   :0.6701   Mean   :0.6186  
-##  3rd Qu.:1.0000   3rd Qu.:1.0000  
-##  Max.   :1.0000   Max.   :1.0000</code></pre>
+summary(stork_env_thinned)</code></pre>
+<pre><code>##        x                y              cell           month4       
+##  Min.   :-9.079   Min.   :36.09   Min.   : 1740   Min.   :0.00000  
+##  1st Qu.:-5.579   1st Qu.:39.30   1st Qu.:13604   1st Qu.:0.00000  
+##  Median :-3.746   Median :40.92   Median :24181   Median :0.00000  
+##  Mean   :-3.379   Mean   :40.63   Mean   :26615   Mean   :0.03675  
+##  3rd Qu.:-1.329   3rd Qu.:42.21   3rd Qu.:37506   3rd Qu.:0.00000  
+##  Max.   : 3.129   Max.   :43.67   Max.   :63492   Max.   :1.00000  
+##      month5            month6              ID          ESP_elv       
+##  Min.   :0.00000   Min.   :0.00000   Min.   :   2   Min.   :  -1.64  
+##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:1106   1st Qu.: 335.52  
+##  Median :0.00000   Median :0.00000   Median :1951   Median : 642.36  
+##  Mean   :0.03828   Mean   :0.04288   Mean   :1937   Mean   : 667.13  
+##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:2849   3rd Qu.: 901.04  
+##  Max.   :1.00000   Max.   :1.00000   Max.   :3698   Max.   :2862.16  
+##      bio_1            bio_2            bio_3           bio_4      
+##  Min.   : 2.567   Min.   : 6.613   Min.   :29.15   Min.   :337.0  
+##  1st Qu.:11.368   1st Qu.:10.011   1st Qu.:37.84   1st Qu.:572.9  
+##  Median :13.187   Median :11.130   Median :39.44   Median :623.4  
+##  Mean   :13.138   Mean   :11.075   Mean   :39.52   Mean   :607.8  
+##  3rd Qu.:15.228   3rd Qu.:12.253   3rd Qu.:41.18   3rd Qu.:660.5  
+##  Max.   :18.476   Max.   :15.122   Max.   :46.41   Max.   :777.8  
+##      bio_5           bio_6            bio_7           bio_8       
+##  Min.   :19.12   Min.   :-9.548   Min.   :16.32   Min.   :-3.696  
+##  1st Qu.:27.01   1st Qu.:-0.548   1st Qu.:26.04   1st Qu.: 7.331  
+##  Median :29.62   Median : 1.072   Median :28.61   Median : 9.881  
+##  Mean   :29.25   Mean   : 1.206   Mean   :28.05   Mean   :10.072  
+##  3rd Qu.:32.25   3rd Qu.: 3.068   3rd Qu.:30.64   3rd Qu.:12.844  
+##  Max.   :36.18   Max.   : 8.320   Max.   :36.14   Max.   :20.576  
+##      bio_9            bio_10          bio_11           bio_12      
+##  Min.   : 2.635   Min.   :11.21   Min.   :-5.029   Min.   : 218.2  
+##  1st Qu.:17.231   1st Qu.:18.95   1st Qu.: 4.479   1st Qu.: 425.7  
+##  Median :20.023   Median :21.41   Median : 6.236   Median : 542.7  
+##  Mean   :19.041   Mean   :21.05   Mean   : 6.263   Mean   : 645.5  
+##  3rd Qu.:23.494   3rd Qu.:23.68   3rd Qu.: 8.273   3rd Qu.: 748.4  
+##  Max.   :26.307   Max.   :26.31   Max.   :12.669   Max.   :1816.6  
+##      bio_13           bio_14          bio_15          bio_16      
+##  Min.   : 29.88   Min.   : 0.00   Min.   :16.45   Min.   : 86.24  
+##  1st Qu.: 55.64   1st Qu.: 7.04   1st Qu.:29.13   1st Qu.:149.04  
+##  Median : 75.04   Median :16.00   Median :37.04   Median :203.52  
+##  Mean   : 84.79   Mean   :20.32   Mean   :39.46   Mean   :231.83  
+##  3rd Qu.: 99.40   3rd Qu.:29.52   3rd Qu.:47.84   3rd Qu.:273.56  
+##  Max.   :258.76   Max.   :76.84   Max.   :78.03   Max.   :713.12  
+##      bio_17           bio_18           bio_19           trees        
+##  Min.   : 12.92   Min.   : 16.20   Min.   : 65.52   Min.   :0.00000  
+##  1st Qu.: 40.28   1st Qu.: 44.28   1st Qu.:115.84   1st Qu.:0.04693  
+##  Median : 66.84   Median : 75.32   Median :174.08   Median :0.17341  
+##  Mean   : 81.59   Mean   : 90.20   Mean   :201.89   Mean   :0.28000  
+##  3rd Qu.:112.12   3rd Qu.:124.60   3rd Qu.:247.40   3rd Qu.:0.48876  
+##  Max.   :262.96   Max.   :266.24   Max.   :713.12   Max.   :0.96485  
+##     cropland         grassland      
+##  Min.   :0.00000   Min.   :0.02362  
+##  1st Qu.:0.00430   1st Qu.:0.19556  
+##  Median :0.09954   Median :0.27568  
+##  Mean   :0.24750   Mean   :0.28805  
+##  3rd Qu.:0.45574   3rd Qu.:0.36213  
+##  Max.   :0.97401   Max.   :0.67505</code></pre>
+<pre class="r"><code># Read in 5km mask of Spain:
+library(terra)</code></pre>
+<pre><code>## terra 1.7.29</code></pre>
+<pre class="r"><code>mask_Esp_5km &lt;- terra::rast(&#39;data/mask_Esp_5km.tif&#39;)
+
+# Map the data:
+plot(mask_Esp_5km, col=&#39;grey90&#39;, legend=F)
+points(stork_env_thinned[,1:2],pch=19,col=c(&#39;grey50&#39;,&#39;red&#39;,&#39;violet&#39;,&#39;blue&#39;)[as.factor(rowSums(stork_env_thinned[,4:6]))], cex=0.3)</code></pre>
+<p><img src="Occ4_SimpleOccModel_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <p>We can get a naïve occupancy estimate for the red kite by simply
 counting the number of 5 km cells where at least one presence was
 recorded during the repeat visits and dividing by the total number of
 sites surveyed:</p>
 <pre class="r"><code># Naive occupancy estimate:
-sum(apply(redkite_det_Esp_2022_wide[,4:6], 1, max)) / nrow(redkite_det_Esp_2022_wide)</code></pre>
-<pre><code>## [1] 0.8865979</code></pre>
-<p>The naïve estimate is that red kite occupy 89% of the sites. However,
+sum(apply(stork_env_thinned[,4:6], 1, max)) / nrow(stork_env_thinned)</code></pre>
+<pre><code>## [1] 0.1117917</code></pre>
+<p>The naïve estimate is that red kite occupy 11% of the sites. However,
 due to false negatives (failure to detect the species although present)
 the true occupancy might be underestimated.</p>
 <p>To estimate the detection probability for the red kite and the true
@@ -582,7 +646,7 @@ have to create an object of class <code>unmarkedFrameOccu</code></p>
 <pre class="r"><code>library(unmarked)
 
 # Create unmarked object containing the detection and non-detection data:
-occ_redkite &lt;- unmarkedFrameOccu(y=redkite_det_Esp_2022_wide[,4:6])</code></pre>
+occ_redkite &lt;- unmarkedFrameOccu(y=stork_env_thinned[,4:6])</code></pre>
 <p>Next, we fit a single season occupancy model using the function
 <code>occu()</code> in the <code>unmarked</code> package. This function
 requires a double formula that specifies the survey and the site
@@ -601,17 +665,17 @@ summary(m_occ_null)</code></pre>
 ## occu(formula = ~1 ~ 1, data = occ_redkite)
 ## 
 ## Occupancy (logit-scale):
-##  Estimate    SE    z  P(&gt;|z|)
-##      2.28 0.199 11.4 2.87e-30
+##  Estimate   SE     z P(&gt;|z|)
+##      1.06 1.81 0.587   0.557
 ## 
 ## Detection (logit-scale):
-##  Estimate     SE    z  P(&gt;|z|)
-##     0.935 0.0753 12.4 2.29e-35
+##  Estimate    SE     z  P(&gt;|z|)
+##     -2.88 0.504 -5.72 1.04e-08
 ## 
-## AIC: 1458.679 
-## Number of sites: 388
+## AIC: 652.9764 
+## Number of sites: 653
 ## optim convergence code: 0
-## optim iterations: 48 
+## optim iterations: 32 
 ## Bootstrap iterations: 0</code></pre>
 <p>The estimates for the occupancy probability and the detection
 probability are provided at logit scale and we need to back transform
@@ -621,20 +685,21 @@ them to get probability estimates between 0 and 1.</p>
 <pre><code>## Backtransformed linear combination(s) of Detection estimate(s)
 ## 
 ##  Estimate     SE LinComb (Intercept)
-##     0.718 0.0152   0.935           1
+##    0.0529 0.0253   -2.88           1
 ## 
 ## Transformation: logistic</code></pre>
 <pre class="r"><code># Get occupancy probability estimate:
 (p_psi &lt;- backTransform(m_occ_null, &quot;state&quot;))</code></pre>
 <pre><code>## Backtransformed linear combination(s) of Occupancy estimate(s)
 ## 
-##  Estimate     SE LinComb (Intercept)
-##     0.907 0.0168    2.28           1
+##  Estimate    SE LinComb (Intercept)
+##     0.743 0.345    1.06           1
 ## 
 ## Transformation: logistic</code></pre>
-<p>We see that our detection probability is rather high at 72% and
-indeed our estimated occupancy probability is 91% and thus close to our
-naïve estimate of 89%.</p>
+<p>We see that our detection probability is very low at 5%, which
+probably leads to severe underestimation of occupancy. And indeed, our
+estimated occupancy probability is 74% and thus much higher than our
+naïve estimate of 11%.</p>
 </div>
 <div id="simple-occupancy-models-with-covariates" class="section level1"
 number="3">
@@ -642,11 +707,10 @@ number="3">
 with covariates</h1>
 <p>Most of the time we are probably more interested in how far site
 covariates affect occupancy probability or even in how far survey
-covariates affect detection probability. In practical Occ-3, we have
-already extracted environmental data for our survey data set. Now, we
-want to add this environmental information to our occupancy-detection
-model to explain how occupancy (or detection) varies across
-environmental gradients.</p>
+covariates affect detection probability. Our data set already contains
+environmental data. Now, we want to add this environmental information
+to our occupancy-detection model to explain how occupancy (or detection)
+varies across environmental gradients.</p>
 <div id="adding-site-covariates" class="section level2" number="3.1">
 <h2><span class="header-section-number">3.1</span> Adding site
 covariates</h2>
@@ -656,48 +720,14 @@ in occupancy. For simplicity, we focus only on two site covariates
 (<em>bio1</em> = mean annual temperature, and <em>tree cover</em>).
 Later, we will learn how deal with multiple site (or survey)
 covariates.</p>
-<p>We first load our data set containing both detection data and
-environmental variables and create an <code>unmarked</code> data
-object.</p>
-<pre class="r"><code># Load species data from Practical 3:
-load(&#39;data/redkite_det_env_Esp_2022.RData&#39;)
-
-head(redkite_det_env_Esp_2022)</code></pre>
-<pre><code>##    cell         x        y month4 month5 month6 ID ESP_elv    bio_1     bio_2
-## 1 52971 -5.995833 37.37917      1      1      1  1   11.96 18.62383 11.624333
-## 2 28278 -3.745833 40.42083      1      1      1  2  627.32 14.45633 11.036667
-## 3 53647 -6.079167 37.29583      1      1      1  3   27.56 18.14633 11.877333
-## 4 58731 -6.120833 36.67083      1      1      1  4   34.08 17.94817  9.913667
-## 5 27941 -3.662500 40.46250      1      1      0  5  715.32 14.03783 10.963667
-## 6 54322 -6.204167 37.21250      1      1      1  6   11.16 17.96250 11.380333
-##      bio_3    bio_4  bio_5 bio_6  bio_7     bio_8    bio_9   bio_10   bio_11
-## 1 41.09237 588.1969 34.452 6.164 28.288 12.606667 26.03933 26.18200 11.78667
-## 2 36.74473 680.4317 31.768 1.732 30.036 10.330000 23.36600 23.36600  6.77200
-## 3 41.94698 576.6686 34.084 5.768 28.316 12.310000 25.41333 25.56267 11.45000
-## 4 40.85036 509.7639 31.368 7.100 24.268 12.980667 24.23400 24.63333 12.08800
-## 5 36.62693 680.0941 31.348 1.416 29.932  9.904667 22.95333 22.95333  6.38000
-## 6 42.20560 548.9442 32.964 6.000 26.964 12.456000 24.81667 25.03133 11.57200
-##   bio_12 bio_13 bio_14   bio_15 bio_16 bio_17 bio_18 bio_19    trees
-## 1 536.20  93.72   2.00 67.06034 252.28  22.20  27.12 223.76 0.088260
-## 2 397.36  50.52  10.00 41.05074 144.00  47.32  47.32 119.16 0.525668
-## 3 537.08  93.84   2.00 66.61317 252.08  22.92  27.04 224.84 0.084180
-## 4 581.84 102.36   1.00 69.60263 279.48  20.48  23.08 253.96 0.068260
-## 5 425.24  55.68  10.88 41.12534 155.56  49.76  49.76 126.56 0.191820
-## 6 522.16  92.16   2.00 68.17232 248.60  21.16  25.00 222.12 0.257988</code></pre>
-<!-- ```{r echo=F} -->
-<!-- # Load species data from Practical 3: -->
-<!-- load('data/redkite_det_env_Esp_2022_v2.RData') -->
-<!-- redkite_det_env_Esp_2022 <- redkite_det_env_Esp_2022_v2 -->
-<!-- head(redkite_det_env_Esp_2022) -->
-<!-- ``` -->
 <p>To help stabilize the numerical optimisation algorithm, we recommend
 standardising the covariates. This can easily be done using the base
 function <code>scale()</code>.</p>
 <pre class="r"><code># Standardise all covariates to have a mean=0 and standard deviation sd=1:
-redkite_det_env_Esp_2022[,-c(1:7)] &lt;- scale(redkite_det_env_Esp_2022[,-c(1:7)])
+stork_env_thinned[,-c(1:7)] &lt;- scale(stork_env_thinned[,-c(1:7)])
 
 # Create unmarked object containing the detection and non-detection data and the covariate data:
-occ_env_redkite &lt;- unmarkedFrameOccu(y = redkite_det_env_Esp_2022[,4:6], siteCovs = redkite_det_env_Esp_2022[,-c(1:7)])</code></pre>
+occ_env_redkite &lt;- unmarkedFrameOccu(y = stork_env_thinned[,4:6], siteCovs = stork_env_thinned[,-c(1:7)])</code></pre>
 <p>We use the same method as we did for our null model only that we now
 add the name(s) of site covariates to the formula (the names are the
 column names of our data set). Remember that the formula in the
@@ -713,18 +743,18 @@ summary(m_occ_bio1)</code></pre>
 ## occu(formula = ~1 ~ bio_1, data = occ_env_redkite)
 ## 
 ## Occupancy (logit-scale):
-##             Estimate    SE      z  P(&gt;|z|)
-## (Intercept)    2.286 0.202 11.297 1.35e-29
-## bio_1         -0.149 0.222 -0.671 5.02e-01
+##             Estimate   SE      z P(&gt;|z|)
+## (Intercept)     74.8 84.6  0.884   0.376
+## bio_1          -63.5 72.3 -0.878   0.380
 ## 
 ## Detection (logit-scale):
-##  Estimate     SE    z P(&gt;|z|)
-##     0.934 0.0754 12.4 2.6e-35
+##  Estimate    SE     z   P(&gt;|z|)
+##     -3.08 0.117 -26.3 6.23e-153
 ## 
-## AIC: 1460.192 
-## Number of sites: 388
-## optim convergence code: 0
-## optim iterations: 35 
+## AIC: 638.3859 
+## Number of sites: 653
+## optim convergence code: 1
+## optim iterations: 150 
 ## Bootstrap iterations: 0</code></pre>
 <p>We can also fit quadratic or higher polynomial terms (check
 <code>?poly</code>) and interactions between predictors:<br />
@@ -740,76 +770,16 @@ specified separately<br />
 variables x1 and x2 plus their linear terms</p>
 <p>Let’s play with these notations a little bit.</p>
 <pre class="r"><code># Add quadratic term:
-occu(~1 ~ bio_1 + I(bio_1^2), occ_env_redkite)</code></pre>
-<pre><code>## 
-## Call:
-## occu(formula = ~1 ~ bio_1 + I(bio_1^2), data = occ_env_redkite)
-## 
-## Occupancy:
-##             Estimate    SE     z  P(&gt;|z|)
-## (Intercept)     2.84 0.655  4.33 1.48e-05
-## bio_1          -3.82 2.066 -1.85 6.46e-02
-## I(bio_1^2)      2.79 1.422  1.96 5.00e-02
-## 
-## Detection:
-##  Estimate     SE  z  P(&gt;|z|)
-##     0.859 0.0714 12 2.31e-33
-## 
-## AIC: 1462.95</code></pre>
-<pre class="r"><code># Add quadratic term using poly():
-occu(~1 ~ poly(bio_1, degree=2, raw=T), occ_env_redkite)</code></pre>
-<pre><code>## 
-## Call:
-## occu(formula = ~1 ~ poly(bio_1, degree = 2, raw = T), data = occ_env_redkite)
-## 
-## Occupancy:
-##                                   Estimate    SE     z  P(&gt;|z|)
-## (Intercept)                           2.84 0.655  4.33 1.48e-05
-## poly(bio_1, degree = 2, raw = T)1    -3.82 2.066 -1.85 6.46e-02
-## poly(bio_1, degree = 2, raw = T)2     2.79 1.422  1.96 5.00e-02
-## 
-## Detection:
-##  Estimate     SE  z  P(&gt;|z|)
-##     0.859 0.0714 12 2.31e-33
-## 
-## AIC: 1462.95</code></pre>
-<pre class="r"><code># Add another covariate:
-occu(~1 ~ bio_1 + trees, occ_env_redkite)</code></pre>
-<pre><code>## 
-## Call:
-## occu(formula = ~1 ~ bio_1 + trees, data = occ_env_redkite)
-## 
-## Occupancy:
-##             Estimate    SE      z  P(&gt;|z|)
-## (Intercept)    2.296 0.206 11.139 8.07e-29
-## bio_1         -0.119 0.229 -0.521 6.02e-01
-## trees          0.145 0.227  0.640 5.22e-01
-## 
-## Detection:
-##  Estimate     SE    z  P(&gt;|z|)
-##     0.934 0.0754 12.4 3.01e-35
-## 
-## AIC: 1461.749</code></pre>
-<pre class="r"><code># Add quadratic terms for both covariates:
-occu(~1 ~ bio_1 + I(bio_1^2) + trees + I(trees^2), occ_env_redkite)</code></pre>
-<pre><code>## 
-## Call:
-## occu(formula = ~1 ~ bio_1 + I(bio_1^2) + trees + I(trees^2), 
-##     data = occ_env_redkite)
-## 
-## Occupancy:
-##             Estimate    SE      z  P(&gt;|z|)
-## (Intercept)    2.806 0.707  3.968 7.24e-05
-## bio_1         -3.922 2.140 -1.833 6.68e-02
-## I(bio_1^2)     2.915 1.465  1.990 4.66e-02
-## trees          0.231 0.397  0.581 5.61e-01
-## I(trees^2)     0.156 0.422  0.370 7.12e-01
-## 
-## Detection:
-##  Estimate     SE  z  P(&gt;|z|)
-##     0.856 0.0716 12 6.12e-33
-## 
-## AIC: 1465.713</code></pre>
+occu(~1 ~ bio_1 + I(bio_1^2), occ_env_redkite)
+
+# Add quadratic term using poly():
+occu(~1 ~ poly(bio_1, degree=2, raw=T), occ_env_redkite)
+
+# Add another covariate:
+occu(~1 ~ bio_1 + cropland, occ_env_redkite)
+
+# Add quadratic terms for both covariates:
+occu(~1 ~ bio_1 + I(bio_1^2) + cropland + I(cropland^2), occ_env_redkite)</code></pre>
 <p>Finally, let’s add a covariate to assess how detection probability
 varies with elevation. Note that this variable is also part of our site
 covariates in the <code>unmarkedFrameOccu</code> object. This has the
@@ -817,26 +787,26 @@ simple reason that this variable does not vary across repeated surveys
 as would e.g. be the case for wind data. We can nevertheless also use
 those covariates that are constant across all surveys to explain spatial
 variation in detection probability.</p>
-<pre class="r"><code>(m_occdet_bio1q_treesq &lt;- occu(~ESP_elv ~ bio_1 + I(bio_1^2) + trees + I(trees^2), occ_env_redkite))</code></pre>
+<pre class="r"><code>(m_occdet_bio1q_cropq &lt;- occu(~ESP_elv ~ bio_1 + I(bio_1^2) + cropland + I(cropland^2), occ_env_redkite))</code></pre>
 <pre><code>## 
 ## Call:
-## occu(formula = ~ESP_elv ~ bio_1 + I(bio_1^2) + trees + I(trees^2), 
+## occu(formula = ~ESP_elv ~ bio_1 + I(bio_1^2) + cropland + I(cropland^2), 
 ##     data = occ_env_redkite)
 ## 
 ## Occupancy:
-##             Estimate    SE      z  P(&gt;|z|)
-## (Intercept)   2.7974 0.669  4.179 2.93e-05
-## bio_1        -3.8874 1.969 -1.974 4.84e-02
-## I(bio_1^2)    2.8314 1.338  2.116 3.44e-02
-## trees         0.2093 0.368  0.569 5.70e-01
-## I(trees^2)    0.0944 0.301  0.314 7.53e-01
+##               Estimate    SE     z P(&gt;|z|)
+## (Intercept)      1.603 0.916  1.75 0.07996
+## bio_1           -0.714 0.416 -1.72 0.08610
+## I(bio_1^2)      -0.365 0.177 -2.06 0.03902
+## cropland         1.218 0.508  2.40 0.01650
+## I(cropland^2)   -1.461 0.490 -2.98 0.00285
 ## 
 ## Detection:
-##             Estimate     SE     z  P(&gt;|z|)
-## (Intercept)    0.891 0.0723 12.33 6.64e-35
-## ESP_elv       -0.236 0.0657 -3.59 3.26e-04
+##             Estimate    SE      z  P(&gt;|z|)
+## (Intercept)   -2.388 0.271 -8.825 1.09e-18
+## ESP_elv        0.115 0.232  0.497 6.19e-01
 ## 
-## AIC: 1454.919</code></pre>
+## AIC: 637.0845</code></pre>
 </div>
 <div id="model-comparison-and-selection" class="section level2"
 number="3.2">
@@ -859,9 +829,9 @@ different candidate models for the same data set.</p>
 <p>We can simply extract the AIC from the model objects.</p>
 <pre class="r"><code># Extract AIC
 m_occ_bio1@AIC</code></pre>
-<pre><code>## [1] 1460.192</code></pre>
-<pre class="r"><code>m_occdet_bio1q_treesq@AIC</code></pre>
-<pre><code>## [1] 1454.919</code></pre>
+<pre><code>## [1] 638.3859</code></pre>
+<pre class="r"><code>m_occdet_bio1q_cropq@AIC</code></pre>
+<pre><code>## [1] 637.0845</code></pre>
 <p>The <code>unmarked</code> package also contains a function
 <code>modSel()</code> function for computing AIC-based model selection.
 For this, we have to provide a list of models to compare. Let’s
@@ -875,40 +845,57 @@ cand_models &lt;- fitList(
   &quot;p(1) psi(1)&quot; = occu(~1 ~ 1, occ_env_redkite),
   &quot;p(1) psi(bio1)&quot; = occu(~1 ~ bio_1, occ_env_redkite),
   &quot;p(1) psi(bio1.sqr)&quot; = occu(~1 ~ bio_1 + I(bio_1^2), occ_env_redkite),
-  &quot;p(1) psi(trees)&quot; = occu(~1 ~ trees, occ_env_redkite),
-  &quot;p(1) psi(trees.sqr)&quot; = occu(~1 ~ trees + I(trees^2), occ_env_redkite),
-  &quot;p(1) psi(bio1 + trees)&quot; = occu(~1 ~ bio_1 + trees, occ_env_redkite),
-  &quot;p(1) psi(bio1.sqr + trees)&quot; = occu(~1 ~ bio_1 + I(bio_1^2) + trees, occ_env_redkite),
-  &quot;p(1) psi(bio1.sqr + trees.sqr)&quot; = occu(~1 ~ bio_1 +I(bio_1^2) + trees + I(trees^2), occ_env_redkite),
+  &quot;p(1) psi(cropland)&quot; = occu(~1 ~ cropland, occ_env_redkite),
+  &quot;p(1) psi(cropland.sqr)&quot; = occu(~1 ~ cropland + I(cropland^2), occ_env_redkite),
+  &quot;p(1) psi(bio1 + cropland)&quot; = occu(~1 ~ bio_1 + cropland, occ_env_redkite),
+  &quot;p(1) psi(bio1.sqr + cropland)&quot; = occu(~1 ~ bio_1 + I(bio_1^2) + cropland, occ_env_redkite),
+  &quot;p(1) psi(bio1.sqr + cropland.sqr)&quot; = occu(~1 ~ bio_1 +I(bio_1^2) + cropland + I(cropland^2), occ_env_redkite),
   &quot;p(elev) psi(1)&quot; = occu(~ESP_elv ~ 1, occ_env_redkite),
   &quot;p(elev) psi(bio1)&quot; = occu(~ESP_elv ~ bio_1, occ_env_redkite),
   &quot;p(elev) psi(bio1.sqr)&quot; = occu(~ESP_elv ~ bio_1 + I(bio_1^2), occ_env_redkite),
-  &quot;p(elev) psi(trees)&quot; = occu(~ESP_elv ~ trees, occ_env_redkite),
-  &quot;p(elev) psi(trees.sqr)&quot; = occu(~ESP_elv ~ trees + I(trees^2), occ_env_redkite),
-  &quot;p(elev) psi(bio1 + trees)&quot; = occu(~ESP_elv ~ bio_1 + trees, occ_env_redkite),
-  &quot;p(elev) psi(bio1.sqr + trees)&quot; = occu(~ESP_elv ~ bio_1 + I(bio_1^2) + trees, occ_env_redkite),
-  &quot;p(elev) psi(bio1.sqr + trees.sqr)&quot; = occu(~ESP_elv ~ bio_1 +I(bio_1^2) + trees + I(trees^2), occ_env_redkite)
+  &quot;p(elev) psi(cropland)&quot; = occu(~ESP_elv ~ cropland, occ_env_redkite),
+  &quot;p(elev) psi(cropland.sqr)&quot; = occu(~ESP_elv ~ cropland + I(cropland^2), occ_env_redkite),
+  &quot;p(elev) psi(bio1 + cropland)&quot; = occu(~ESP_elv ~ bio_1 + cropland, occ_env_redkite),
+  &quot;p(elev) psi(bio1.sqr + cropland)&quot; = occu(~ESP_elv ~ bio_1 + I(bio_1^2) + cropland, occ_env_redkite),
+  &quot;p(elev) psi(bio1.sqr + cropland.sqr)&quot; = occu(~ESP_elv ~ bio_1 +I(bio_1^2) + cropland + I(cropland^2), occ_env_redkite)
 )
 
 # Compute the summary output for model selection. When explicitly stating which candidate model refers is the null model, then a Nagelkerke R-square is computed.
 (m_sel &lt;- modSel(cand_models, nullmod=&quot;p(1) psi(1)&quot;))</code></pre>
-<pre><code>##                                   nPars     AIC delta   AICwt cumltvWt      Rsq
-## p(elev) psi(bio1.sqr)                 5 1451.96  0.00 0.45849     0.46  0.03303
-## p(elev) psi(bio1.sqr + trees)         6 1453.03  1.07 0.26787     0.73  0.03539
-## p(elev) psi(bio1.sqr + trees.sqr)     7 1454.92  2.96 0.10440     0.83  0.03568
-## p(elev) psi(1)                        3 1456.93  4.97 0.03823     0.87  0.00985
-## p(elev) psi(bio1)                     4 1456.95  4.99 0.03777     0.91  0.01501
-## p(elev) psi(trees)                    4 1457.95  5.99 0.02296     0.93  0.01241
-## p(elev) psi(bio1 + trees)             5 1458.29  6.33 0.01934     0.95  0.01672
-## p(1) psi(1)                           2 1458.68  6.72 0.01593     0.96  0.00000
-## p(elev) psi(trees.sqr)                5 1459.75  7.79 0.00933     0.97  0.01293
-## p(1) psi(trees)                       3 1460.04  8.08 0.00808     0.98  0.00169
-## p(1) psi(bio1)                        3 1460.19  8.23 0.00748     0.99  0.00129
-## p(1) psi(bio1 + trees)                4 1461.75  9.79 0.00343     0.99  0.00245
-## p(1) psi(trees.sqr)                   4 1461.90  9.94 0.00318     1.00  0.00205
-## p(1) psi(bio1.sqr)                    4 1462.95 10.99 0.00188     1.00 -0.00071
-## p(1) psi(bio1.sqr + trees)            5 1463.92 11.96 0.00116     1.00  0.00201
-## p(1) psi(bio1.sqr + trees.sqr)        6 1465.71 13.75 0.00047     1.00  0.00255</code></pre>
+<pre><code>##                                      nPars    AIC delta   AICwt cumltvWt
+## p(1) psi(bio1.sqr + cropland.sqr)        6 635.34  0.00 3.6e-01     0.36
+## p(elev) psi(cropland.sqr)                5 636.46  1.12 2.1e-01     0.57
+## p(elev) psi(bio1.sqr + cropland.sqr)     7 637.08  1.75 1.5e-01     0.72
+## p(1) psi(bio1)                           3 638.39  3.05 7.9e-02     0.80
+## p(1) psi(bio1.sqr)                       4 639.06  3.72 5.7e-02     0.86
+## p(1) psi(cropland.sqr)                   4 640.17  4.84 3.2e-02     0.89
+## p(1) psi(bio1 + cropland)                4 640.49  5.16 2.8e-02     0.92
+## p(elev) psi(bio1)                        4 640.57  5.24 2.7e-02     0.94
+## p(1) psi(bio1.sqr + cropland)            5 641.33  5.99 1.8e-02     0.96
+## p(elev) psi(bio1.sqr)                    5 641.36  6.03 1.8e-02     0.98
+## p(elev) psi(bio1 + cropland)             5 642.59  7.26 9.7e-03     0.99
+## p(elev) psi(bio1.sqr + cropland)         6 642.71  7.38 9.1e-03     1.00
+## p(elev) psi(cropland)                    4 647.66 12.33 7.7e-04     1.00
+## p(1) psi(1)                              2 652.98 17.64 5.4e-05     1.00
+## p(elev) psi(1)                           3 653.48 18.14 4.2e-05     1.00
+## p(1) psi(cropland)                       3 654.98 19.64 2.0e-05     1.00
+##                                          Rsq
+## p(1) psi(bio1.sqr + cropland.sqr)    6.1e-02
+## p(elev) psi(cropland.sqr)            5.4e-02
+## p(elev) psi(bio1.sqr + cropland.sqr) 6.2e-02
+## p(1) psi(bio1)                       4.0e-02
+## p(1) psi(bio1.sqr)                   4.3e-02
+## p(1) psi(cropland.sqr)               4.0e-02
+## p(1) psi(bio1 + cropland)            4.0e-02
+## p(elev) psi(bio1)                    3.9e-02
+## p(1) psi(bio1.sqr + cropland)        4.2e-02
+## p(elev) psi(bio1.sqr)                4.2e-02
+## p(elev) psi(bio1 + cropland)         3.9e-02
+## p(elev) psi(bio1.sqr + cropland)     4.4e-02
+## p(elev) psi(cropland)                2.2e-02
+## p(1) psi(1)                          0.0e+00
+## p(elev) psi(1)                       3.6e-03
+## p(1) psi(cropland)                   1.9e-06</code></pre>
 <p>The output provides different useful summary statistics.</p>
 <ul>
 <li><code>delta</code> refers to the <span class="math inline">\(\Delta
@@ -970,7 +957,7 @@ cor_mat &lt;- cor(occ_env_redkite@siteCovs, method=&#39;spearman&#39;)
 # We can visualise this correlation matrix. For better visibility, 
 # we plot the correlation coefficients as percentages.
 corrplot.mixed(cor_mat, tl.pos=&#39;lt&#39;, tl.cex=0.6, number.cex=0.5, addCoefasPercent=T)</code></pre>
-<p><img src="Occ4_SimpleOccModel_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="Occ4_SimpleOccModel_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>If no prior knowledge is available on the importance of different
 predictors, then <span class="citation">Dormann et al. (2013)</span>
 suggest to assess univariate variable importance in terms of AIC (Akaike
@@ -997,13 +984,13 @@ var_sel &lt;- select07_unm(occ_env_redkite, names(occ_env_redkite@siteCovs), thr
 # Check out the structure of the resulting object:
 str(var_sel)</code></pre>
 <pre><code>## List of 3
-##  $ AIC     : Named num [1:21] 1460 1460 1460 1460 1460 ...
-##   ..- attr(*, &quot;names&quot;)= chr [1:21] &quot;bio_15&quot; &quot;bio_14&quot; &quot;bio_10&quot; &quot;bio_18&quot; ...
-##  $ cor_mat : num [1:21, 1:21] 1 -0.859 0.129 -0.412 0.475 ...
+##  $ AIC     : Named num [1:23] 602 634 635 637 638 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:23] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_9&quot; &quot;bio_17&quot; ...
+##  $ cor_mat : num [1:23, 1:23] 1 -0.8522 0.0316 -0.4323 0.3327 ...
 ##   ..- attr(*, &quot;dimnames&quot;)=List of 2
-##   .. ..$ : chr [1:21] &quot;ESP_elv&quot; &quot;bio_1&quot; &quot;bio_2&quot; &quot;bio_3&quot; ...
-##   .. ..$ : chr [1:21] &quot;ESP_elv&quot; &quot;bio_1&quot; &quot;bio_2&quot; &quot;bio_3&quot; ...
-##  $ pred_sel: chr [1:9] &quot;bio_15&quot; &quot;bio_10&quot; &quot;trees&quot; &quot;bio_12&quot; ...</code></pre>
+##   .. ..$ : chr [1:23] &quot;ESP_elv&quot; &quot;bio_1&quot; &quot;bio_2&quot; &quot;bio_3&quot; ...
+##   .. ..$ : chr [1:23] &quot;ESP_elv&quot; &quot;bio_1&quot; &quot;bio_2&quot; &quot;bio_3&quot; ...
+##  $ pred_sel: chr [1:10] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_9&quot; &quot;cropland&quot; ...</code></pre>
 <pre class="r"><code># We extract the names of the weakly correlated predictors ordered by the univariate variable importance in terms of AIC:
 pred_sel &lt;- var_sel$pred_sel</code></pre>
 <p>So, we have now reduced our set of covariates that are only weakly
@@ -1014,19 +1001,16 @@ of thumb, we should have ten observations (presence sites or absence
 sites) per covariate that is included in the model <span
 class="citation">(Guisan, Thuiller, and Zimmermann 2017)</span>.</p>
 <pre class="r"><code># Number of presences
-sum(apply(redkite_det_env_Esp_2022[,4:6], 1, max))</code></pre>
-<pre><code>## [1] 344</code></pre>
+sum(apply(stork_env_thinned[,4:6], 1, max))</code></pre>
+<pre><code>## [1] 73</code></pre>
 <pre class="r"><code># Number of absence
-nrow(redkite_det_env_Esp_2022) - sum(apply(redkite_det_env_Esp_2022[,4:6], 1, max))</code></pre>
-<pre><code>## [1] 44</code></pre>
-<p>In our case, we have comparably few absence site, which will thus be
-the limiting number.</p>
+nrow(stork_env_thinned) - sum(apply(stork_env_thinned[,4:6], 1, max))</code></pre>
+<pre><code>## [1] 580</code></pre>
+<p>In our case, we have fewer presence sites, which will thus be the
+limiting number.</p>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>
-<li>Have you downloaded any other land cover data in the previous
-tutorial? Then also try these out. For example, grassland might be more
-important for the red kite than tree cover.</li>
 <li>Define a full model with the weakly correlated variables including
 their linear and quadratic terms. Adhere to the rule of thumb for the
 number of covariates allowed in the model.</li>
@@ -1035,6 +1019,7 @@ number of covariates allowed in the model.</li>
 Practical Occ-2.</li>
 </ul>
 </div>
+<!-- common errors in occu(): https://doi90.github.io/lodestar/fitting-occupancy-models-with-unmarked.html -->
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
