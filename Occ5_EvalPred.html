@@ -35,6 +35,10 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/clipboard-1.7.1/clipboard.min.js"></script>
+<link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
+<link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
+<script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
 <link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
 
@@ -62,6 +66,28 @@ if (window.hljs) {
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 
 
@@ -400,6 +426,14 @@ prediction</h1>
 </div>
 
 
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'top', 'auto', '1', 'Copy code', 'Copied!');
+</script>
+<!-- ```{r echo=F} -->
+<!-- Sys.setlocale("LC_MESSAGES", "en_GB.UTF-8") -->
+<!-- Sys.setenv(LANG="en_US.UTF-8") -->
+<!-- ``` -->
 <hr />
 <div class="alert alert-info">
 <p><strong>RStudio project</strong></p>
@@ -415,8 +449,419 @@ and save the file in your folder “scripts” within your project folder,
 e.g. as “Occ5_EvalPred.R”</li>
 </ul>
 </div>
-<p><em>Under construction …</em></p>
-<!-- # References -->
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>In this practical, we will learn how to validate occupancy models and
+how to make predictions. During validation, we are of course interested
+in how far our model fits the data but also whether the model is
+plausible and makes adequate predictions to new times and places. These
+aspects should be prerequisite for making predictions in space and in
+time. ## Recap of last session: data and models</p>
+<p>In the previous practical, we used red kite detection/non-detection
+data from eBird to model occupancy in Spain. Remember that our data
+processing steps for the eBird were overly simplified and do not
+correspond to best practices. The eBird best practices and more
+elaborate workflows are described here: <a
+href="https://cornelllabofornithology.github.io/ebird-best-practices"
+class="uri">https://cornelllabofornithology.github.io/ebird-best-practices</a>.
+As indicated earlier, the main purpose of the present practicals is to
+exemplify the workflow and basic functionality of occupancy models using
+freely available data.</p>
+<p>Thus, we will again use the Spanish red kite example, estimate our
+occupancy model in order to identify the main environmental determinants
+of red kite distribution, assess plausibility and model accuracy, and
+map our predictions.</p>
+<p>We start by reading in the data and standardising. In contrast to the
+previous practical, we will not “blindly” use the function
+<code>scale()</code> for standardising but we first explicitly calculate
+the mean and standard deviations of the covariates and store them for
+later. This will become important when making predictions to new
+data.</p>
+<pre class="r"><code>library(unmarked)
+
+# Load species data:
+load(&#39;data/redkite_env_thinned.RData&#39;)
+
+# Estimate the covariate means and sd
+cov_means &lt;- colMeans(redkite_env_thinned[,-c(1:7)])
+cov_sd &lt;- apply(redkite_env_thinned[,-c(1:7)],2,sd)
+
+# Standardise using the covariate means and sd
+redkite_env_scaled &lt;- redkite_env_thinned
+redkite_env_scaled[,-c(1:7)] &lt;- scale(redkite_env_scaled[,-c(1:7)], center=cov_means, scale=cov_sd)
+
+# Create unmarked object containing the detection and non-detection data and the covariate data:
+occ_env_redkite &lt;- unmarkedFrameOccu(y = redkite_env_scaled[,4:6], siteCovs = redkite_env_scaled[,-c(1:7)])</code></pre>
+<!-- ```{r echo=F, eval=F} -->
+<!-- library(mecofun) -->
+<!-- var_sel <- select07_unm(occ_env_redkite, names(occ_env_redkite@siteCovs), threshold=0.7) -->
+<!-- preds <- c('bio_2', 'I(bio_2^2)', 'bio_3', 'I(bio_3^2)', 'bio_9', 'I(bio_9^2)', 'cropland', 'I(cropland^2)') -->
+<!-- formula_start1 <- '~ 1 ~' -->
+<!-- formula_start2 <- '~ ESP_elv ~' -->
+<!-- model_list <- list() -->
+<!-- for (i in seq_len(length(preds))) { -->
+<!--   # get matrix with all combinations: -->
+<!--   combis <- combn(preds,i) -->
+<!--   for (cl in seq_len(ncol(combis))) { -->
+<!--     form1 <- paste(formula_start1, paste(combis[,cl], collapse=' + ')) -->
+<!--     form2 <- paste(formula_start2, paste(combis[,cl], collapse=' + ')) -->
+<!--     list_entry1 <- list(occu(as.formula(form1), occ_env_redkite)) -->
+<!--     names(list_entry1) <- form1 -->
+<!--     list_entry2 <- list(occu(as.formula(form2), occ_env_redkite)) -->
+<!--     names(list_entry2) <- form2 -->
+<!--     model_list <- append(model_list, list_entry1) -->
+<!--     model_list <- append(model_list, list_entry2) -->
+<!--   } -->
+<!-- } -->
+<!--  list_entry0 <- list(occu(~1 ~ 1, occ_env_redkite)) -->
+<!--  names(list_entry0) <- "p(1) psi(1)" -->
+<!--  model_list <- append(model_list, list_entry0) -->
+<!-- (m_sel <- modSel(fitList(model_list), nullmod="p(1) psi(1)")) -->
+<!-- ``` -->
+<p>We fit a comparably simple model with only two weakly correlated
+covariates explaining occupancy and one covariate explaining detection.
+We have already identified a set of weakly correlated variables in
+Practical Occ-4 and we have also learned how to use AIC-based model
+selection to identify a good set of candidate models. The model below
+has a <span class="math inline">\(\Delta AIC\)</span> of 2.22 behind the
+best model of all potential combinations of the first four weakly
+correlated variables identified in the previous practical. I chose it
+for its simple shape.</p>
+<pre class="r"><code># Fit occupancy-detection model
+(m_occdet &lt;- occu(~ ESP_elv ~ bio_3 + cropland + I(cropland^2), occ_env_redkite))</code></pre>
+<pre><code>## 
+## Call:
+## occu(formula = ~ESP_elv ~ bio_3 + cropland + I(cropland^2), data = occ_env_redkite)
+## 
+## Occupancy:
+##               Estimate    SE      z  P(&gt;|z|)
+## (Intercept)     0.0844 0.610  0.138 0.890032
+## bio_3          -2.1453 0.508 -4.224 0.000024
+## cropland        1.1833 0.449  2.637 0.008371
+## I(cropland^2)  -1.1912 0.406 -2.936 0.003320
+## 
+## Detection:
+##             Estimate    SE      z  P(&gt;|z|)
+## (Intercept)   -2.081 0.243 -8.547 1.26e-17
+## ESP_elv       -0.102 0.135 -0.756 4.50e-01
+## 
+## AIC: 591.6341</code></pre>
+</div>
+<div id="model-assessment" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Model assessment</h1>
+<!-- Follow pages 593-600 in Kery & Royle (2015) -->
+<div id="assessing-model-fit" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Assessing model
+fit</h2>
+<p>Even if we have selected a best model based on AIC or another
+information theoretic approach, we still need to ascertain our level of
+confidence in the model, which is typically done by assessing model fit
+(or lack thereof) <span class="citation">(MacKenzie and Bailey
+2004)</span>.</p>
+<div id="nagelkerke-r_n2" class="section level3" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> Nagelkerke <span
+class="math inline">\(R_{N}^{2}\)</span></h3>
+<p>In model assessment, we aim to assess how well the model is fitting
+the data, meaning how well it is calibrated. we have already seen the
+Nagelkerke <span class="math inline">\(R_{N}^{2}\)</span> as part of the
+summary statistics output from the AIC-based model selection. We can
+quickly repeat it here as it only needs the comparison to a null
+model.</p>
+<pre class="r"><code>modSel(fitList(
+  &quot;our model&quot;= m_occdet, 
+  &quot;null&quot; = occu(~ 1 ~ 1, occ_env_redkite)), nullmod=&quot;null&quot;)</code></pre>
+<pre><code>##           nPars    AIC delta   AICwt cumltvWt  Rsq
+## our model     6 591.63  0.00 1.0e+00     1.00 0.16
+## null          2 652.98 61.34 4.8e-14     1.00 0.00</code></pre>
+<p>As indicated earlier, <span class="math inline">\(R^2\)</span> values
+in logistic regression are rather low and so are pseudo-<span
+class="math inline">\(R^2\)</span> values such as Nagelkerke <span
+class="math inline">\(R_{N}^{2}\)</span> <span class="citation">(Hosmer
+and Lemeshow 2013)</span>. An <span
+class="math inline">\(R_{N}^{2}\)</span> of <span
+class="math inline">\(0\)</span> would indicate that the model
+predictions represent those of the null model, while values of 0-0.1
+indicate a poor improvement in model fit, 0.1-0.3 modest model fit,
+0.3-0.5 moderate model fit, and values above 0.5 a strong model fit
+<span class="citation">(Muijs 2010)</span>. Thus, our <span
+class="math inline">\(R_{N}^{2}\)</span> of 0.16 indicates a modest
+model fit.</p>
+</div>
+<div id="goodness-of-fit-test-gof" class="section level3"
+number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> Goodness-of-fit
+test (GoF)</h3>
+<p>Goodness-of-fit (GoF) methods are useful to test how well the model
+fits the data. When data contain false negatives due to imperfect
+detection, then the true state process (the occupancy) is hidden <span
+class="citation">(Guillera-Arroita 2017)</span>. Thus, when assessing
+how well the model fits the data in case of occupancy-detection models,
+we need to keep in mind that our observations are a combined effect of
+occupancy and detectability <span class="citation">(Guillera-Arroita
+2017)</span>.</p>
+<p>Here, we are going to use the goodness-fit-test by <span
+class="citation">MacKenzie and Bailey (2004)</span>, implemented in the
+<code>mb.gof.test()</code> function in the package
+<code>AICcmodavg</code> <span class="citation">(Mazerolle 2023)</span>.
+This approach calculates a Pearson’s chi-square fit statistic from the
+observed and expected frequencies of detection histories for a given
+model. However, as the expected frequencies tend to be small, not all
+assumptions of the chi-square statistic are met and it is recommended to
+use parametric bootstrapping to obtain <em>p</em>-values and determine
+whether there is an unusually large discrepancy between observed and
+expected values. This bootstrap procedure is described in detail in
+<span class="citation">(MacKenzie and Bailey 2004, 306)</span>.</p>
+<p>The function <code>mb.chisq()</code> computes the observed and
+expected frequencies for the detection histories contained in the
+data.</p>
+<pre class="r"><code>library(AICcmodavg)
+
+# compute observed and expected frequencies of detection histories
+mb.chisq(m_occdet)</code></pre>
+<pre><code>## 
+## MacKenzie and Bailey goodness-of-fit for single-season occupancy model
+## 
+## Pearson chi-square table:
+## 
+##     Cohort Observed Expected Chi-square
+## 000      0      580   584.21       0.03
+## 001      0       25    20.33       1.07
+## 010      0       24    20.33       0.66
+## 100      0       21    20.33       0.02
+## 101      0        2     2.50       0.10
+## 111      0        1     0.31       1.53
+## 
+## Chi-square statistic = 8.4184</code></pre>
+<p>The function <code>mb.gof.test()</code> performs the bootstrapped
+test. Typically, it is recommended to simulate at least 1000 bootstrap
+samples, but this can take quite long. Thus, for illustrative purposes
+you may want to reduce the number of bootstrap samples (set using by
+argument <code>nsim</code>). The <em>p</em>-value indicates the
+probability of the null hypothesis that there is no lack of fit and thus
+no major differences between expected and observed frequencies. Hence,
+<span class="math inline">\(p≤0.05\)</span> indicates a lack-of-fit of
+the model.</p>
+<pre class="r"><code># perform bootstrapped GoF-test
+(gof.results &lt;- mb.gof.test(m_occdet, nsim=1000))</code></pre>
+<pre><code>## 
+## MacKenzie and Bailey goodness-of-fit for single-season occupancy model
+## 
+## Pearson chi-square table:
+## 
+##     Cohort Observed Expected Chi-square
+## 000      0      580   584.03       0.03
+## 001      0       25    20.44       1.02
+## 010      0       24    20.44       0.62
+## 100      0       21    20.44       0.02
+## 101      0        2     2.45       0.08
+## 111      0        1     0.30       1.64
+## 
+## Chi-square statistic = 8.3021 
+## Number of bootstrap samples = 1000
+## P-value = 0.147
+## 
+## Quantiles of bootstrapped statistics:
+##    0%   25%   50%   75%  100% 
+##  0.28  3.17  4.74  6.95 31.77 
+## 
+## Estimate of c-hat = 1.54</code></pre>
+<p>In our example, observed frequencies of detection histories and
+expected frequencies correspond reasonably well and there is no reason
+to suspect a lack of fit. We thus have good confidence in our model.</p>
+<p>We also obtain the overdispersion parameter <span
+class="math inline">\(\hat{c}\)</span> (c-hat) that indicates whether
+the field data are more (or less) variable than we expect from our
+global model. Here, it is calculated by dividing the observed chi-square
+statistic by the average of the test statistics obtained from the
+parametric bootstrap <span class="citation">(MacKenzie and Bailey
+2004)</span>. Ideally, <span class="math inline">\(\hat{c}\)</span>
+should be close to 1. Values lower than 1 indicate underdispersion,
+meaning lower variation than expected, and values larger than 1 indicate
+overdispersion. <span class="math inline">\(\hat{c}\)</span> values of
+2-4 may indicate lack of independence of observations, and values above
+4 indicate severe lack of fit. In cases of moderate overdispersion,
+<span class="math inline">\(\hat{c}\)</span> can be used as variance
+inflation factor to correct the AIC values and prediction variances or
+standard errors.</p>
+</div>
+</div>
+<div id="visualising-the-modelled-response" class="section level2"
+number="2.2">
+<h2><span class="header-section-number">2.2</span> Visualising the
+modelled response</h2>
+<p>Having ascertained a reasonable model fit, we will now inspect the
+fitted occupancy-environment relationships and the fitted
+detection-environment relationship. For this, we will draw partial
+response plots that depict how the modelled response varies across one
+environmental gradient while keeping all other environmental variables
+constant at their mean. To do so, we create dummy data that contain the
+covariate gradients and then make predictions to these dummy data.</p>
+<pre class="r"><code># Create covariate gradients (at original scale):
+grad.bio3 &lt;- seq(min(redkite_env_thinned$bio_3), max(redkite_env_thinned$bio_3), length=100)
+grad.cropland &lt;- seq(min(redkite_env_thinned$cropland), max(redkite_env_thinned$cropland), length=100)
+grad.elev &lt;- seq(min(redkite_env_thinned$ESP_elv), max(redkite_env_thinned$ESP_elv), length=100)
+
+# Standardise them using the stored means and sd of our data
+grad.bio3.scaled &lt;- scale(grad.bio3, center=cov_means[&#39;bio_3&#39;], scale=cov_sd[&#39;bio_3&#39;])
+grad.cropland.scaled &lt;- scale(grad.cropland, center=cov_means[&#39;cropland&#39;], scale=cov_sd[&#39;cropland&#39;])
+grad.elev.scaled &lt;- scale(grad.elev, center=cov_means[&#39;ESP_elv&#39;], scale=cov_sd[&#39;ESP_elv&#39;])
+
+# Make prediction of state process (occupancy) - predictions are done separately for each gradient, while the other covariate is kep constant at their mean (mean=0 as the covariates were standardised)
+dummyData &lt;- data.frame(bio_3=grad.bio3.scaled, cropland=0)
+pred.occ.bio3 &lt;- predict(m_occdet, type=&quot;state&quot;, newdata=dummyData, appendData=TRUE)
+
+dummyData &lt;- data.frame(bio_3=0, cropland=grad.cropland.scaled)
+pred.occ.copland &lt;- predict(m_occdet, type=&quot;state&quot;, newdata=dummyData, appendData=TRUE)
+
+# Make occupancy prediction - predictions are done separately for each gradient, while the other covariate is kept constant at their mean (mean=0 as the covariates were standardised)
+dummyData &lt;- data.frame(bio_3=grad.bio3.scaled, cropland=0)
+pred.occ.bio3 &lt;- predict(m_occdet, type=&quot;state&quot;, newdata=dummyData, appendData=TRUE)
+
+dummyData &lt;- data.frame(bio_3=0, cropland=grad.cropland.scaled)
+pred.occ.cropland &lt;- predict(m_occdet, type=&quot;state&quot;, newdata=dummyData, appendData=TRUE)
+
+# Make detectability prediction - here, we only have one gradient in our example
+dummyData &lt;- data.frame(ESP_elv=grad.elev.scaled)
+pred.det.elev &lt;- predict(m_occdet, type=&quot;det&quot;, newdata=dummyData, appendData=TRUE)</code></pre>
+<p>The prediction output contains the predictions, the standard error
+(SE) and the lower and upper bounds of the 95% confidence interval. We
+now plot the predictions and the confidence intervals.</p>
+<pre class="r"><code># partition the graphics device into 2x2 panels (switch back to 1-panel window with par(mfrow = c(1,1)) )
+par(mfrow = c(2,2))
+
+# plot the response curves for occupancy probability along bio3 gradient:
+plot(pred.occ.bio3[[1]] ~ grad.bio3, type = &quot;n&quot;, ylim = c(0,1), ylab = &quot;Pred. occupancy prob.&quot;, xlab = &quot;bio3&quot;) 
+polygon(c(grad.bio3,rev(grad.bio3)), c(pred.occ.bio3[,3],rev(pred.occ.bio3[,4])), col=&#39;grey&#39;, border=NA)
+lines(pred.occ.bio3[[1]] ~ grad.bio3, lwd=3, col=&#39;blue&#39;)
+
+# plot the response curves for occupancy probability along cropland gradient:
+plot(pred.occ.cropland[[1]] ~ grad.cropland, type = &quot;n&quot;, ylim = c(0,1), ylab = &quot;Pred. occupancy prob.&quot;, xlab = &quot;Fraction of cropland&quot;) 
+polygon(c(grad.cropland,rev(grad.cropland)), c(pred.occ.cropland[,3],rev(pred.occ.cropland[,4])), col=&#39;grey&#39;, border=NA)
+lines(pred.occ.cropland[[1]] ~ grad.cropland, lwd=3, col=&#39;blue&#39;)
+
+# plot the response curves for detection probability along elevation gradient:
+plot(pred.det.elev[[1]] ~ grad.elev, type = &quot;n&quot;, ylim = c(0,1), ylab = &quot;Pred. detection prob.&quot;, xlab = &quot;Elevation&quot;) 
+polygon(c(grad.elev,rev(grad.elev)), c(pred.det.elev[,3],rev(pred.det.elev[,4])), col=&#39;grey&#39;, border=NA)
+lines(pred.det.elev[[1]] ~ grad.elev, lwd=3, col=&#39;blue&#39;)</code></pre>
+<p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>We can interpret that occupancy probability of red kite decreases
+with isothermality (bio3), meaning when diurnal (day-to-night)
+temperature differences become closer to annual (summer-to-winter)
+temperature differences. Thus, red kites prefer areas where the
+temperature variability within a month is considerably smaller than
+compared to the annual variability. Further, occupancy probability of
+red kite is highest for intermediate proportions of cropland. Finally,
+detection probability decreases with elevation, although this
+relationship does not seem very pronounced. Overall, our modelled
+responses appear very plausible.</p>
+<p>Strictly, as our <span class="math inline">\(\hat{c}\)</span> value
+from the GoF test was above 1, we would use this to inflate the standard
+errors around our predictions. The confidence bands would then become
+wider.</p>
+</div>
+</div>
+<div id="mapping-predictions" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Mapping
+predictions</h1>
+<p>We have already learned how to use the <code>predict()</code>
+function in the previous step. To map predictions in space, we need the
+geographic layers of the environmental variables. But we have to take
+care to standardise these in the same way as our training data before
+calling them in the <code>predict()</code> function.</p>
+<p>If you closely followed Practical 3, then you should have all the
+environmental raster layers at 5 km spatial resolution stored in your
+data folder. (If not, download from moodle.)</p>
+<pre class="r"><code># Read environmental layers:
+library(terra)</code></pre>
+<pre><code>## terra 1.7.29</code></pre>
+<pre class="r"><code>clim_5km &lt;- terra::rast(&#39;data/bioclim_ESP_5km.tif&#39;)
+crop_5km &lt;- terra::rast(&#39;data/crops_5km.tif&#39;)
+elev_5km &lt;- terra::rast(&#39;data/elev_Esp_5km.tif&#39;)</code></pre>
+<p>The <code>predict()</code> function expects a data frame. We thus
+combine all environmental information in a data frame and then
+standardise the data using the scaling coefficients that we have
+previously estimated from our training data.</p>
+<pre class="r"><code># Create data frame with environmental data and coordinates (exclude non-terrestrial cells with NAs):
+env_dat &lt;- na.exclude(
+  as.data.frame(c(clim_5km,elev_5km,crop_5km), xy=T)
+)
+
+# Standardise data (using the previous scaling coefficients!!):
+env_dat_scaled &lt;- env_dat
+env_dat_scaled &lt;- data.frame(scale(env_dat_scaled[,-c(1:2)], center=cov_means[names(env_dat_scaled[,-c(1:2)])], scale=cov_sd[names(env_dat_scaled[,-c(1:2)])]))</code></pre>
+<p>We make predictions to the new data sets and append these to our
+coordinate information. This is important to be able to create raster
+maps again.</p>
+<pre class="r"><code># Make occupancy predictions and append to x/y coordinates of environmental data frame:
+pred_occ &lt;- cbind(env_dat[,1:2],predict(m_occdet, newdata=env_dat_scaled, type=&quot;state&quot;))
+
+# Make detectability predictions and append to x/y coordinates of environmental data frame:
+pred_det &lt;- cbind(env_dat[,1:2],predict(m_occdet, newdata=env_dat_scaled, type=&quot;det&quot;))</code></pre>
+<p>We use <code>terra::rast()</code> to create the
+<code>SpatRaster</code> objects. For this, we just have to provide the
+coordinate information and any columns that we want as raster
+information.</p>
+<pre class="r"><code># Make multi-layer SpatRaster from prediction data frame:
+pred_occ_r &lt;- terra::rast(pred_occ[,c(&#39;x&#39;,&#39;y&#39;,&#39;Predicted&#39;,&#39;SE&#39;)], type=&#39;xyz&#39;, crs=crs(clim_5km))
+pred_det_r &lt;- terra::rast(pred_det[,c(&#39;x&#39;,&#39;y&#39;,&#39;Predicted&#39;,&#39;SE&#39;)], type=&#39;xyz&#39;, crs=crs(clim_5km))</code></pre>
+<p>For mapping, you could use the generic function <code>plot()</code>.
+Here, we are using the <code>spplot()</code> function from the library
+<code>raster</code>, which provides a single legend to both maps.</p>
+<pre class="r"><code>library(raster)
+
+# Map predicted occupancy along with its standard error
+spplot(pred_occ_r, main=&quot;Predicted occupancy&quot;)</code></pre>
+<p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code># Map predicted detectability along with its standard error
+spplot(pred_det_r, main=&quot;Predicted detectability&quot;)</code></pre>
+<p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<div class="alert alert-info">
+<p><em><strong>Exercise:</strong></em></p>
+<ul>
+<li>From the set of candidate models from the last practical, pick
+another model with high support. Assess the goodness of fit.</li>
+<li>Plot the partial response curves. If your c-hat value from the
+GoF-test was above 1, use it to inflate your confidence bands. You can
+extract the c-hat from the GoF object using
+<code>gof.results$c.hat.est</code>. Interpret the response curves.</li>
+<li>Map the predictions and the corresponding standard errors. Where are
+predictions most uncertain?</li>
+<li>Repeat the steps for your own study species from Practical
+Occ-2.</li>
+</ul>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Guillera-Arroita2017" class="csl-entry">
+Guillera-Arroita, Gurutzeta. 2017. <span>“Modelling of Species
+Distributions, Range Dynamics and Communities Under Imperfect Detection:
+Advances, Challenges and Opportunities.”</span> <em>Ecography</em> 40
+(2): 281–95. <a
+href="https://doi.org/10.1111/ecog.02445">https://doi.org/10.1111/ecog.02445</a>.
+</div>
+<div id="ref-Hosmer2013" class="csl-entry">
+Hosmer, David W., and Stanley Lemeshow. 2013. <em>Applied Logistic
+Regression</em>. 3rd ed. John Wiley &amp; Sons, Inc.
+</div>
+<div id="ref-MacKenzie_2004" class="csl-entry">
+MacKenzie, Darryl I., and Larissa L. Bailey. 2004. <span>“Assessing the
+Fit of Site-Occupancy Models.”</span> <em>Journal of Agricultural,
+Biological, and Environmental Statistics</em> 9 (3): 300–318. <a
+href="https://doi.org/10.1198/108571104x3361">https://doi.org/10.1198/108571104x3361</a>.
+</div>
+<div id="ref-AICcmodavg" class="csl-entry">
+Mazerolle, Marc J. 2023. <em>AICcmodavg: Model Selection and Multimodel
+Inference Based on (q)AIC(c)</em>. <a
+href="https://cran.r-project.org/package=AICcmodavg">https://cran.r-project.org/package=AICcmodavg</a>.
+</div>
+<div id="ref-Muijs2010" class="csl-entry">
+Muijs, Daniel. 2010. <em>Doing Quantitative Research in Education with
+SPSS</em>. SAGE Publications.
+</div>
+</div>
+</div>
 
 <!DOCTYPE html>
 <html>

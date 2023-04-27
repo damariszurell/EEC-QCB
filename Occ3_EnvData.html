@@ -468,6 +468,8 @@ elev_Esp_1km &lt;- geodata::elevation_30s(country=&#39;ESP&#39;, path=&#39;data&
 elev_Esp_5km &lt;- terra::aggregate(elev_Esp_1km, fact=5)
 plot(elev_Esp_5km)</code></pre>
 <p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre class="r"><code># write to file:
+terra::writeRaster(elev_Esp_5km,filename=&#39;data/elev_Esp_5km.tif&#39;)</code></pre>
 <!-- Let's also create the mask of Spain again, which we can use to mask other environmental layers later on. -->
 <!-- ```{r message=F} -->
 <!-- # Create mask of spain -->
@@ -518,7 +520,7 @@ clim_1km</code></pre>
 ## min values  :   -2.120833,    2.816667,    27.84268,    177.0144,        14.2,       -12.6, ... 
 ## max values  :   26.387501,   16.833334,    60.56201,    931.0112,        47.1,        17.1, ...</code></pre>
 <pre class="r"><code>terra::plot(clim_1km)</code></pre>
-<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre class="r"><code># The climate data are provided within a larger spatial extent than the elevation data, and we thus crop them
 clim_1km &lt;- terra::crop(clim_1km, elev_Esp_1km)
 
@@ -527,7 +529,7 @@ clim_5km &lt;- terra::aggregate(clim_1km, fact=5)
 
 # Plot the climate data
 terra::plot(clim_5km)</code></pre>
-<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
 <div id="future-climate-scenarios" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Future climate
 scenarios</h2>
@@ -571,7 +573,7 @@ clim_fut_5km</code></pre>
 ## min values  :   2.9,   3.4,  27.8, 222.1,  21.0,  -9.5, ... 
 ## max values  :  23.1,  15.9,  47.6, 900.7,  43.7,  13.0, ...</code></pre>
 <pre class="r"><code>plot(clim_fut_5km)</code></pre>
-<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>We see that the current and future climate <code>SpatRaster</code>
 objects have different layer names. This could cause problems in
 occupancy modelling and we thus want make sure that they all have the
@@ -597,8 +599,8 @@ names(clim_1km)</code></pre>
 names(clim_1km) &lt;- names(clim_5km) &lt;- names(clim_fut_5km) &lt;- paste(&#39;bio&#39;,1:19,sep=&#39;_&#39;)</code></pre>
 <p>You can also write <code>SpatRaster</code> objects to file. Here, we
 save the <code>SpatRaster</code> objects in a GeoTiff:</p>
-<pre class="r"><code>terra::writeRaster(clim,filename=&#39;data/bioclim_ESP_5km.tif&#39;)
-terra::writeRaster(clim_fut,filename=&#39;data/bioclim_fut_ESP_5km.tif&#39;)</code></pre>
+<pre class="r"><code>terra::writeRaster(clim_5km,filename=&#39;data/bioclim_ESP_5km.tif&#39;)
+terra::writeRaster(clim_fut_5km,filename=&#39;data/bioclim_fut_ESP_5km.tif&#39;)</code></pre>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>
@@ -632,7 +634,7 @@ trees_1km &lt;- terra::crop(trees_1km, elev_Esp_1km)
 
 # map the tree cover
 plot(trees_1km)</code></pre>
-<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>Above, we used climate data at 2.5-min (roughly 5 km) spatial
 resolution. To obtain the same spatial resolution for the land cover, we
 have to aggregate the <code>SpatRaster</code> object.</p>
@@ -641,7 +643,9 @@ trees_5km &lt;- terra::aggregate(trees_1km, fact=5, fun=&#39;mean&#39;)
 
 # Map the 2.5-min tree cover (roughly 5 km)
 plot(trees_5km)</code></pre>
-<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># Save to file
+terra::writeRaster(trees_5km,filename=&#39;data/trees_5km.tif&#39;)</code></pre>
 <p>Now that our tree cover data and climate data are at the same spatial
 resolution, we can stack them into a multi-layer object.</p>
 <pre class="r"><code># Produce the multi-layer environmental data object:

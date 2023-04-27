@@ -538,20 +538,20 @@ default). For the query, we have to provide the personal access token
 for the API.</p>
 <pre class="r"><code># Find all eBird reportings of red kite in Spain in the last 30 days: 
 ebirdregion(loc = &#39;ES&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBIRD_KEY)</code></pre>
-<pre><code>## # A tibble: 2,051 × 13
+<pre><code>## # A tibble: 2,016 × 13
 ##    speciesCode comName sciName locId locName obsDt howMany   lat    lng obsValid
 ##    &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt;   
-##  1 redkit1     Red Ki… Milvus… L153… Sarga-… 2023…       1  42.2 -0.393 TRUE    
-##  2 redkit1     Red Ki… Milvus… L237… Peñadi… 2023…       1  42.0 -1.60  TRUE    
-##  3 redkit1     Red Ki… Milvus… L360… Alzuza  2023…       1  42.8 -1.57  TRUE    
-##  4 redkit1     Red Ki… Milvus… L581… Trujil… 2023…       1  39.4 -5.86  TRUE    
-##  5 redkit1     Red Ki… Milvus… L218… Vía si… 2023…      NA  42.0 -1.60  TRUE    
-##  6 redkit1     Red Ki… Milvus… L551… Valder… 2023…       2  42.2 -5.91  TRUE    
-##  7 redkit1     Red Ki… Milvus… L485… Barlue… 2023…       1  42.2 -0.339 TRUE    
-##  8 redkit1     Red Ki… Milvus… L100… Torren… 2023…       1  39.9  2.96  TRUE    
-##  9 redkit1     Red Ki… Milvus… L238… Vía si… 2023…       1  41.4 -0.637 TRUE    
-## 10 redkit1     Red Ki… Milvus… L548… Sª de … 2023…       2  40.7 -4.49  TRUE    
-## # ℹ 2,041 more rows
+##  1 redkit1     Red Ki… Milvus… L238… 52-50 … 2023…       1  40.7 -3.99  TRUE    
+##  2 redkit1     Red Ki… Milvus… L456… Son Bo… 2023…       1  39.8  3.11  TRUE    
+##  3 redkit1     Red Ki… Milvus… L238… Via se… 2023…       4  41.8  0.974 TRUE    
+##  4 redkit1     Red Ki… Milvus… L797… Es Bla… 2023…       5  39.7  3.07  TRUE    
+##  5 redkit1     Red Ki… Milvus… L223… Villac… 2023…       4  40.8 -4.41  TRUE    
+##  6 redkit1     Red Ki… Milvus… L163… Narril… 2023…       1  40.6 -5.47  TRUE    
+##  7 redkit1     Red Ki… Milvus… L480… Emb. S… 2023…       3  40.7 -3.81  TRUE    
+##  8 redkit1     Red Ki… Milvus… L113… Borau,… 2023…       5  42.7 -0.573 TRUE    
+##  9 redkit1     Red Ki… Milvus… L868… Aguasa… 2023…       1  41.3 -4.65  TRUE    
+## 10 redkit1     Red Ki… Milvus… L518… Torres… 2023…       1  42.1  0.379 TRUE    
+## # ℹ 2,006 more rows
 ## # ℹ 3 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;, subId &lt;chr&gt;</code></pre>
 <p>To access periods that are longer away than the last 30 days, we can
 use the function <code>ebirdhistorical()</code>.</p>

@@ -556,70 +556,78 @@ red kite in Practical 2 and merged it with environmental data in
 Practical 3. These data contain the observed detection/non-detection of
 red kites in Spain in 5 km cells for the months April to June. I have
 further spatially thinned the data; you can download the resulting
-dataset <a href="data/stork_env_thinned.RData">here</a>. Also download
+dataset <a href="data/redkite_env_thinned.RData">here</a>. Also download
 the 5km mask of Spain (we created this in Practical 2, available <a
 href="data/mask_Esp_5km.tif">here</a>). Please store all data in your
 “data” folder.</p>
+<p>Please be aware that our oversimplified workflow for collating the
+eBird data does not correspond to best practices. The eBird best
+practices and more elaborate workflows are described here: <a
+href="https://cornelllabofornithology.github.io/ebird-best-practices"
+class="uri">https://cornelllabofornithology.github.io/ebird-best-practices</a>.
+The main purpose of the present practicals is to exemplify the workflow
+and basic functionality of occupancy models using freely available
+data.</p>
 <pre class="r"><code># Load species data:
-load(&#39;data/stork_env_thinned.RData&#39;)
+load(&#39;data/redkite_env_thinned.RData&#39;)
 
-summary(stork_env_thinned)</code></pre>
+summary(redkite_env_thinned)</code></pre>
 <pre><code>##        x                y              cell           month4       
 ##  Min.   :-9.079   Min.   :36.09   Min.   : 1740   Min.   :0.00000  
-##  1st Qu.:-5.579   1st Qu.:39.30   1st Qu.:13604   1st Qu.:0.00000  
-##  Median :-3.746   Median :40.92   Median :24181   Median :0.00000  
-##  Mean   :-3.379   Mean   :40.63   Mean   :26615   Mean   :0.03675  
-##  3rd Qu.:-1.329   3rd Qu.:42.21   3rd Qu.:37506   3rd Qu.:0.00000  
-##  Max.   : 3.129   Max.   :43.67   Max.   :63492   Max.   :1.00000  
+##  1st Qu.:-5.579   1st Qu.:39.30   1st Qu.:13705   1st Qu.:0.00000  
+##  Median :-3.746   Median :40.92   Median :24301   Median :0.00000  
+##  Mean   :-3.377   Mean   :40.63   Mean   :26624   Mean   :0.03675  
+##  3rd Qu.:-1.329   3rd Qu.:42.21   3rd Qu.:37417   3rd Qu.:0.00000  
+##  Max.   : 3.129   Max.   :43.67   Max.   :63491   Max.   :1.00000  
 ##      month5            month6              ID          ESP_elv       
-##  Min.   :0.00000   Min.   :0.00000   Min.   :   2   Min.   :  -1.64  
-##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.:1106   1st Qu.: 335.52  
-##  Median :0.00000   Median :0.00000   Median :1951   Median : 642.36  
-##  Mean   :0.03828   Mean   :0.04288   Mean   :1937   Mean   : 667.13  
-##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:2849   3rd Qu.: 901.04  
-##  Max.   :1.00000   Max.   :1.00000   Max.   :3698   Max.   :2862.16  
+##  Min.   :0.00000   Min.   :0.00000   Min.   :   8   Min.   :  -2.84  
+##  1st Qu.:0.00000   1st Qu.:0.00000   1st Qu.: 998   1st Qu.: 338.48  
+##  Median :0.00000   Median :0.00000   Median :1917   Median : 625.52  
+##  Mean   :0.03828   Mean   :0.04288   Mean   :1909   Mean   : 655.62  
+##  3rd Qu.:0.00000   3rd Qu.:0.00000   3rd Qu.:2848   3rd Qu.: 897.56  
+##  Max.   :1.00000   Max.   :1.00000   Max.   :3698   Max.   :2267.32  
 ##      bio_1            bio_2            bio_3           bio_4      
-##  Min.   : 2.567   Min.   : 6.613   Min.   :29.15   Min.   :337.0  
-##  1st Qu.:11.368   1st Qu.:10.011   1st Qu.:37.84   1st Qu.:572.9  
-##  Median :13.187   Median :11.130   Median :39.44   Median :623.4  
-##  Mean   :13.138   Mean   :11.075   Mean   :39.52   Mean   :607.8  
-##  3rd Qu.:15.228   3rd Qu.:12.253   3rd Qu.:41.18   3rd Qu.:660.5  
-##  Max.   :18.476   Max.   :15.122   Max.   :46.41   Max.   :777.8  
-##      bio_5           bio_6            bio_7           bio_8       
-##  Min.   :19.12   Min.   :-9.548   Min.   :16.32   Min.   :-3.696  
-##  1st Qu.:27.01   1st Qu.:-0.548   1st Qu.:26.04   1st Qu.: 7.331  
-##  Median :29.62   Median : 1.072   Median :28.61   Median : 9.881  
-##  Mean   :29.25   Mean   : 1.206   Mean   :28.05   Mean   :10.072  
-##  3rd Qu.:32.25   3rd Qu.: 3.068   3rd Qu.:30.64   3rd Qu.:12.844  
-##  Max.   :36.18   Max.   : 8.320   Max.   :36.14   Max.   :20.576  
+##  Min.   : 2.069   Min.   : 6.643   Min.   :29.15   Min.   :337.0  
+##  1st Qu.:11.440   1st Qu.:10.018   1st Qu.:37.87   1st Qu.:567.8  
+##  Median :13.297   Median :11.093   Median :39.53   Median :623.1  
+##  Mean   :13.194   Mean   :11.079   Mean   :39.58   Mean   :606.8  
+##  3rd Qu.:15.223   3rd Qu.:12.274   3rd Qu.:41.21   3rd Qu.:660.0  
+##  Max.   :18.476   Max.   :15.122   Max.   :46.41   Max.   :762.8  
+##      bio_5           bio_6            bio_7           bio_8        
+##  Min.   :18.46   Min.   :-9.220   Min.   :16.32   Min.   :-0.8033  
+##  1st Qu.:27.14   1st Qu.:-0.460   1st Qu.:25.95   1st Qu.: 7.5933  
+##  Median :29.67   Median : 1.132   Median :28.58   Median : 9.8760  
+##  Mean   :29.28   Mean   : 1.261   Mean   :28.02   Mean   :10.1266  
+##  3rd Qu.:32.19   3rd Qu.: 3.036   3rd Qu.:30.63   3rd Qu.:12.9427  
+##  Max.   :36.18   Max.   : 8.200   Max.   :36.14   Max.   :19.4513  
 ##      bio_9            bio_10          bio_11           bio_12      
-##  Min.   : 2.635   Min.   :11.21   Min.   :-5.029   Min.   : 218.2  
-##  1st Qu.:17.231   1st Qu.:18.95   1st Qu.: 4.479   1st Qu.: 425.7  
-##  Median :20.023   Median :21.41   Median : 6.236   Median : 542.7  
-##  Mean   :19.041   Mean   :21.05   Mean   : 6.263   Mean   : 645.5  
-##  3rd Qu.:23.494   3rd Qu.:23.68   3rd Qu.: 8.273   3rd Qu.: 748.4  
-##  Max.   :26.307   Max.   :26.31   Max.   :12.669   Max.   :1816.6  
+##  Min.   : 2.585   Min.   :10.70   Min.   :-5.193   Min.   : 218.2  
+##  1st Qu.:17.205   1st Qu.:18.96   1st Qu.: 4.472   1st Qu.: 426.1  
+##  Median :20.058   Median :21.46   Median : 6.286   Median : 540.0  
+##  Mean   :19.108   Mean   :21.09   Mean   : 6.327   Mean   : 641.1  
+##  3rd Qu.:23.494   3rd Qu.:23.68   3rd Qu.: 8.332   3rd Qu.: 725.8  
+##  Max.   :26.275   Max.   :26.28   Max.   :12.669   Max.   :1816.6  
 ##      bio_13           bio_14          bio_15          bio_16      
-##  Min.   : 29.88   Min.   : 0.00   Min.   :16.45   Min.   : 86.24  
-##  1st Qu.: 55.64   1st Qu.: 7.04   1st Qu.:29.13   1st Qu.:149.04  
-##  Median : 75.04   Median :16.00   Median :37.04   Median :203.52  
-##  Mean   : 84.79   Mean   :20.32   Mean   :39.46   Mean   :231.83  
-##  3rd Qu.: 99.40   3rd Qu.:29.52   3rd Qu.:47.84   3rd Qu.:273.56  
-##  Max.   :258.76   Max.   :76.84   Max.   :78.03   Max.   :713.12  
+##  Min.   : 29.88   Min.   : 0.00   Min.   :18.29   Min.   : 86.24  
+##  1st Qu.: 55.56   1st Qu.: 7.00   1st Qu.:29.24   1st Qu.:147.88  
+##  Median : 74.60   Median :15.88   Median :37.06   Median :202.80  
+##  Mean   : 84.25   Mean   :20.17   Mean   :39.51   Mean   :230.25  
+##  3rd Qu.: 99.00   3rd Qu.:27.96   3rd Qu.:47.83   3rd Qu.:272.40  
+##  Max.   :258.76   Max.   :77.12   Max.   :77.80   Max.   :713.12  
 ##      bio_17           bio_18           bio_19           trees        
-##  Min.   : 12.92   Min.   : 16.20   Min.   : 65.52   Min.   :0.00000  
-##  1st Qu.: 40.28   1st Qu.: 44.28   1st Qu.:115.84   1st Qu.:0.04693  
-##  Median : 66.84   Median : 75.32   Median :174.08   Median :0.17341  
-##  Mean   : 81.59   Mean   : 90.20   Mean   :201.89   Mean   :0.28000  
-##  3rd Qu.:112.12   3rd Qu.:124.60   3rd Qu.:247.40   3rd Qu.:0.48876  
-##  Max.   :262.96   Max.   :266.24   Max.   :713.12   Max.   :0.96485  
-##     cropland         grassland      
-##  Min.   :0.00000   Min.   :0.02362  
-##  1st Qu.:0.00430   1st Qu.:0.19556  
-##  Median :0.09954   Median :0.27568  
-##  Mean   :0.24750   Mean   :0.28805  
-##  3rd Qu.:0.45574   3rd Qu.:0.36213  
-##  Max.   :0.97401   Max.   :0.67505</code></pre>
+##  Min.   : 12.92   Min.   : 16.20   Min.   : 65.56   Min.   :0.00000  
+##  1st Qu.: 40.48   1st Qu.: 44.00   1st Qu.:115.08   1st Qu.:0.05137  
+##  Median : 65.84   Median : 75.12   Median :170.48   Median :0.19214  
+##  Mean   : 81.11   Mean   : 89.74   Mean   :200.33   Mean   :0.28622  
+##  3rd Qu.:112.88   3rd Qu.:124.52   3rd Qu.:248.76   3rd Qu.:0.49534  
+##  Max.   :260.16   Max.   :263.44   Max.   :713.12   Max.   :0.98086  
+##     cropland          grassland      
+##  Min.   :0.000000   Min.   :0.02362  
+##  1st Qu.:0.005316   1st Qu.:0.19864  
+##  Median :0.099340   Median :0.27477  
+##  Mean   :0.247443   Mean   :0.28716  
+##  3rd Qu.:0.461840   3rd Qu.:0.36127  
+##  Max.   :0.974008   Max.   :0.67191</code></pre>
 <pre class="r"><code># Read in 5km mask of Spain:
 library(terra)</code></pre>
 <pre><code>## terra 1.7.29</code></pre>
@@ -627,14 +635,14 @@ library(terra)</code></pre>
 
 # Map the data:
 plot(mask_Esp_5km, col=&#39;grey90&#39;, legend=F)
-points(stork_env_thinned[,1:2],pch=19,col=c(&#39;grey50&#39;,&#39;red&#39;,&#39;violet&#39;,&#39;blue&#39;)[as.factor(rowSums(stork_env_thinned[,4:6]))], cex=0.3)</code></pre>
+points(redkite_env_thinned[,1:2],pch=19,col=c(&#39;grey50&#39;,&#39;red&#39;,&#39;violet&#39;,&#39;blue&#39;)[as.factor(rowSums(redkite_env_thinned[,4:6]))], cex=0.3)</code></pre>
 <p><img src="Occ4_SimpleOccModel_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <p>We can get a naïve occupancy estimate for the red kite by simply
 counting the number of 5 km cells where at least one presence was
 recorded during the repeat visits and dividing by the total number of
 sites surveyed:</p>
 <pre class="r"><code># Naive occupancy estimate:
-sum(apply(stork_env_thinned[,4:6], 1, max)) / nrow(stork_env_thinned)</code></pre>
+sum(apply(redkite_env_thinned[,4:6], 1, max)) / nrow(redkite_env_thinned)</code></pre>
 <pre><code>## [1] 0.1117917</code></pre>
 <p>The naïve estimate is that red kite occupy 11% of the sites. However,
 due to false negatives (failure to detect the species although present)
@@ -646,7 +654,7 @@ have to create an object of class <code>unmarkedFrameOccu</code></p>
 <pre class="r"><code>library(unmarked)
 
 # Create unmarked object containing the detection and non-detection data:
-occ_redkite &lt;- unmarkedFrameOccu(y=stork_env_thinned[,4:6])</code></pre>
+occ_redkite &lt;- unmarkedFrameOccu(y=redkite_env_thinned[,4:6])</code></pre>
 <p>Next, we fit a single season occupancy model using the function
 <code>occu()</code> in the <code>unmarked</code> package. This function
 requires a double formula that specifies the survey and the site
@@ -724,10 +732,10 @@ covariates.</p>
 standardising the covariates. This can easily be done using the base
 function <code>scale()</code>.</p>
 <pre class="r"><code># Standardise all covariates to have a mean=0 and standard deviation sd=1:
-stork_env_thinned[,-c(1:7)] &lt;- scale(stork_env_thinned[,-c(1:7)])
+redkite_env_thinned[,-c(1:7)] &lt;- scale(redkite_env_thinned[,-c(1:7)])
 
 # Create unmarked object containing the detection and non-detection data and the covariate data:
-occ_env_redkite &lt;- unmarkedFrameOccu(y = stork_env_thinned[,4:6], siteCovs = stork_env_thinned[,-c(1:7)])</code></pre>
+occ_env_redkite &lt;- unmarkedFrameOccu(y = redkite_env_thinned[,4:6], siteCovs = redkite_env_thinned[,-c(1:7)])</code></pre>
 <p>We use the same method as we did for our null model only that we now
 add the name(s) of site covariates to the formula (the names are the
 column names of our data set). Remember that the formula in the
@@ -744,17 +752,17 @@ summary(m_occ_bio1)</code></pre>
 ## 
 ## Occupancy (logit-scale):
 ##             Estimate   SE      z P(&gt;|z|)
-## (Intercept)     74.8 84.6  0.884   0.376
-## bio_1          -63.5 72.3 -0.878   0.380
+## (Intercept)     55.4 75.9  0.729   0.466
+## bio_1          -46.8 65.2 -0.717   0.473
 ## 
 ## Detection (logit-scale):
 ##  Estimate    SE     z   P(&gt;|z|)
-##     -3.08 0.117 -26.3 6.23e-153
+##     -3.08 0.117 -26.3 1.18e-152
 ## 
-## AIC: 638.3859 
+## AIC: 638.1646 
 ## Number of sites: 653
-## optim convergence code: 1
-## optim iterations: 150 
+## optim convergence code: 0
+## optim iterations: 119 
 ## Bootstrap iterations: 0</code></pre>
 <p>We can also fit quadratic or higher polynomial terms (check
 <code>?poly</code>) and interactions between predictors:<br />
@@ -795,18 +803,18 @@ variation in detection probability.</p>
 ## 
 ## Occupancy:
 ##               Estimate    SE     z P(&gt;|z|)
-## (Intercept)      1.603 0.916  1.75 0.07996
-## bio_1           -0.714 0.416 -1.72 0.08610
-## I(bio_1^2)      -0.365 0.177 -2.06 0.03902
-## cropland         1.218 0.508  2.40 0.01650
-## I(cropland^2)   -1.461 0.490 -2.98 0.00285
+## (Intercept)      1.662 0.957  1.74 0.08251
+## bio_1           -0.708 0.427 -1.66 0.09764
+## I(bio_1^2)      -0.346 0.178 -1.95 0.05156
+## cropland         1.218 0.526  2.32 0.02046
+## I(cropland^2)   -1.445 0.505 -2.86 0.00424
 ## 
 ## Detection:
 ##             Estimate    SE      z  P(&gt;|z|)
-## (Intercept)   -2.388 0.271 -8.825 1.09e-18
-## ESP_elv        0.115 0.232  0.497 6.19e-01
+## (Intercept)    -2.43 0.268 -9.072 1.17e-19
+## ESP_elv         0.14 0.223  0.628 5.30e-01
 ## 
-## AIC: 637.0845</code></pre>
+## AIC: 638.0071</code></pre>
 </div>
 <div id="model-comparison-and-selection" class="section level2"
 number="3.2">
@@ -829,9 +837,9 @@ different candidate models for the same data set.</p>
 <p>We can simply extract the AIC from the model objects.</p>
 <pre class="r"><code># Extract AIC
 m_occ_bio1@AIC</code></pre>
-<pre><code>## [1] 638.3859</code></pre>
+<pre><code>## [1] 638.1646</code></pre>
 <pre class="r"><code>m_occdet_bio1q_cropq@AIC</code></pre>
-<pre><code>## [1] 637.0845</code></pre>
+<pre><code>## [1] 638.0071</code></pre>
 <p>The <code>unmarked</code> package also contains a function
 <code>modSel()</code> function for computing AIC-based model selection.
 For this, we have to provide a list of models to compare. Let’s
@@ -862,40 +870,41 @@ cand_models &lt;- fitList(
 
 # Compute the summary output for model selection. When explicitly stating which candidate model refers is the null model, then a Nagelkerke R-square is computed.
 (m_sel &lt;- modSel(cand_models, nullmod=&quot;p(1) psi(1)&quot;))</code></pre>
+<pre><code>## Warning in sqrt(diag(vcov(x, altNames = TRUE))): NaNs produced</code></pre>
 <pre><code>##                                      nPars    AIC delta   AICwt cumltvWt
-## p(1) psi(bio1.sqr + cropland.sqr)        6 635.34  0.00 3.6e-01     0.36
-## p(elev) psi(cropland.sqr)                5 636.46  1.12 2.1e-01     0.57
-## p(elev) psi(bio1.sqr + cropland.sqr)     7 637.08  1.75 1.5e-01     0.72
-## p(1) psi(bio1)                           3 638.39  3.05 7.9e-02     0.80
-## p(1) psi(bio1.sqr)                       4 639.06  3.72 5.7e-02     0.86
-## p(1) psi(cropland.sqr)                   4 640.17  4.84 3.2e-02     0.89
-## p(1) psi(bio1 + cropland)                4 640.49  5.16 2.8e-02     0.92
-## p(elev) psi(bio1)                        4 640.57  5.24 2.7e-02     0.94
-## p(1) psi(bio1.sqr + cropland)            5 641.33  5.99 1.8e-02     0.96
-## p(elev) psi(bio1.sqr)                    5 641.36  6.03 1.8e-02     0.98
-## p(elev) psi(bio1 + cropland)             5 642.59  7.26 9.7e-03     0.99
-## p(elev) psi(bio1.sqr + cropland)         6 642.71  7.38 9.1e-03     1.00
-## p(elev) psi(cropland)                    4 647.66 12.33 7.7e-04     1.00
-## p(1) psi(1)                              2 652.98 17.64 5.4e-05     1.00
-## p(elev) psi(1)                           3 653.48 18.14 4.2e-05     1.00
-## p(1) psi(cropland)                       3 654.98 19.64 2.0e-05     1.00
+## p(1) psi(bio1.sqr + cropland.sqr)        6 636.41  0.00 3.1e-01     0.31
+## p(elev) psi(cropland.sqr)                5 637.20  0.79 2.1e-01     0.52
+## p(elev) psi(bio1.sqr + cropland.sqr)     7 638.01  1.59 1.4e-01     0.65
+## p(1) psi(bio1)                           3 638.16  1.75 1.3e-01     0.78
+## p(1) psi(bio1.sqr)                       4 639.09  2.68 8.1e-02     0.86
+## p(elev) psi(bio1)                        4 640.40  3.99 4.2e-02     0.91
+## p(elev) psi(bio1.sqr)                    5 640.61  4.20 3.8e-02     0.94
+## p(1) psi(cropland.sqr)                   4 641.89  5.48 2.0e-02     0.96
+## p(1) psi(bio1 + cropland)                4 642.37  5.96 1.6e-02     0.98
+## p(1) psi(bio1.sqr + cropland)            5 643.23  6.82 1.0e-02     0.99
+## p(elev) psi(bio1 + cropland)             5 644.30  7.89 6.0e-03     0.99
+## p(elev) psi(bio1.sqr + cropland)         6 645.23  8.82 3.8e-03     1.00
+## p(elev) psi(cropland)                    4 647.74 11.32 1.1e-03     1.00
+## p(elev) psi(1)                           3 652.74 16.32 8.8e-05     1.00
+## p(1) psi(1)                              2 652.98 16.56 7.8e-05     1.00
+## p(1) psi(cropland)                       3 654.98 18.56 2.9e-05     1.00
 ##                                          Rsq
-## p(1) psi(bio1.sqr + cropland.sqr)    6.1e-02
-## p(elev) psi(cropland.sqr)            5.4e-02
-## p(elev) psi(bio1.sqr + cropland.sqr) 6.2e-02
+## p(1) psi(bio1.sqr + cropland.sqr)    5.9e-02
+## p(elev) psi(cropland.sqr)            5.2e-02
+## p(elev) psi(bio1.sqr + cropland.sqr) 6.0e-02
 ## p(1) psi(bio1)                       4.0e-02
 ## p(1) psi(bio1.sqr)                   4.3e-02
-## p(1) psi(cropland.sqr)               4.0e-02
-## p(1) psi(bio1 + cropland)            4.0e-02
-## p(elev) psi(bio1)                    3.9e-02
-## p(1) psi(bio1.sqr + cropland)        4.2e-02
-## p(elev) psi(bio1.sqr)                4.2e-02
-## p(elev) psi(bio1 + cropland)         3.9e-02
-## p(elev) psi(bio1.sqr + cropland)     4.4e-02
+## p(elev) psi(bio1)                    4.0e-02
+## p(elev) psi(bio1.sqr)                4.4e-02
+## p(1) psi(cropland.sqr)               3.6e-02
+## p(1) psi(bio1 + cropland)            3.5e-02
+## p(1) psi(bio1.sqr + cropland)        3.8e-02
+## p(elev) psi(bio1 + cropland)         3.5e-02
+## p(elev) psi(bio1.sqr + cropland)     3.8e-02
 ## p(elev) psi(cropland)                2.2e-02
+## p(elev) psi(1)                       5.4e-03
 ## p(1) psi(1)                          0.0e+00
-## p(elev) psi(1)                       3.6e-03
-## p(1) psi(cropland)                   1.9e-06</code></pre>
+## p(1) psi(cropland)                   7.7e-07</code></pre>
 <p>The output provides different useful summary statistics.</p>
 <ul>
 <li><code>delta</code> refers to the <span class="math inline">\(\Delta
@@ -927,6 +936,16 @@ class="math inline">\(R^2\)</span> values in logistic regression are
 rather low <span class="citation">(Hosmer and Lemeshow
 2013)</span>.</li>
 </ul>
+<p>Often, there is no obvious best model and several models seem
+similarly plausible. In such situations, model averaging can be useful
+for combining several plausible models and averaging parameter estimates
+or predictions <span class="citation">(Burnham and Anderson 2002;
+Dormann et al. 2018)</span>. We will not specifically cover model
+averaging here. For those interested in model averaging, there are
+several packages that allow model averaging of occupancy models fit with
+the <code>unmarked</code> package, for example using the packages
+<code>AICmodavg</code> <span class="citation">(Mazerolle 2023)</span> or
+<code>MuMIn</code> <span class="citation">(Bartoń 2022)</span>.</p>
 </div>
 <div id="multicollinearity" class="section level2" number="3.3">
 <h2><span class="header-section-number">3.3</span>
@@ -984,13 +1003,13 @@ var_sel &lt;- select07_unm(occ_env_redkite, names(occ_env_redkite@siteCovs), thr
 # Check out the structure of the resulting object:
 str(var_sel)</code></pre>
 <pre><code>## List of 3
-##  $ AIC     : Named num [1:23] 602 634 635 637 638 ...
+##  $ AIC     : Named num [1:23] 600 634 636 637 638 ...
 ##   ..- attr(*, &quot;names&quot;)= chr [1:23] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_9&quot; &quot;bio_17&quot; ...
-##  $ cor_mat : num [1:23, 1:23] 1 -0.8522 0.0316 -0.4323 0.3327 ...
+##  $ cor_mat : num [1:23, 1:23] 1 -0.8538 0.0425 -0.4327 0.3346 ...
 ##   ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. ..$ : chr [1:23] &quot;ESP_elv&quot; &quot;bio_1&quot; &quot;bio_2&quot; &quot;bio_3&quot; ...
 ##   .. ..$ : chr [1:23] &quot;ESP_elv&quot; &quot;bio_1&quot; &quot;bio_2&quot; &quot;bio_3&quot; ...
-##  $ pred_sel: chr [1:10] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_9&quot; &quot;cropland&quot; ...</code></pre>
+##  $ pred_sel: chr [1:10] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_9&quot; &quot;bio_11&quot; ...</code></pre>
 <pre class="r"><code># We extract the names of the weakly correlated predictors ordered by the univariate variable importance in terms of AIC:
 pred_sel &lt;- var_sel$pred_sel</code></pre>
 <p>So, we have now reduced our set of covariates that are only weakly
@@ -1001,10 +1020,10 @@ of thumb, we should have ten observations (presence sites or absence
 sites) per covariate that is included in the model <span
 class="citation">(Guisan, Thuiller, and Zimmermann 2017)</span>.</p>
 <pre class="r"><code># Number of presences
-sum(apply(stork_env_thinned[,4:6], 1, max))</code></pre>
+sum(apply(redkite_env_thinned[,4:6], 1, max))</code></pre>
 <pre><code>## [1] 73</code></pre>
 <pre class="r"><code># Number of absence
-nrow(stork_env_thinned) - sum(apply(stork_env_thinned[,4:6], 1, max))</code></pre>
+nrow(redkite_env_thinned) - sum(apply(redkite_env_thinned[,4:6], 1, max))</code></pre>
 <pre><code>## [1] 580</code></pre>
 <p>In our case, we have fewer presence sites, which will thus be the
 limiting number.</p>
@@ -1014,7 +1033,8 @@ limiting number.</p>
 <li>Define a full model with the weakly correlated variables including
 their linear and quadratic terms. Adhere to the rule of thumb for the
 number of covariates allowed in the model.</li>
-<li>Compile a set of candidate models and run a model comparison.</li>
+<li>Compile a set of candidate models and run a model comparison. Save
+the results to file.</li>
 <li>Repeat the steps with your own species data that you compiled in
 Practical Occ-2.</li>
 </ul>
@@ -1025,10 +1045,22 @@ Practical Occ-2.</li>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-MuMIn" class="csl-entry">
+Bartoń, Kamil. 2022. <em>MuMIn: Multi-Model Inference</em>. <a
+href="https://CRAN.R-project.org/package=MuMIn">https://CRAN.R-project.org/package=MuMIn</a>.
+</div>
 <div id="ref-burnham2002" class="csl-entry">
 Burnham, Kenneth P., and David R. Anderson. 2002. <em>Model Selection
 and Multi-Model Inference: A Practical Information-Theoretic
 Approach</em>. 2nd ed. Springer.
+</div>
+<div id="ref-Dormann2018a" class="csl-entry">
+Dormann, Carsten F., Justin M. Calabrese, Gurutzeta Guillera-Arroita,
+Eleni Matechou, Volker Bahn, Kamil Bartoń, Colin M. Beale, et al. 2018.
+<span>“Model Averaging in Ecology: A Review of Bayesian,
+Information-Theoretic, and Tactical Approaches for Predictive
+Inference.”</span> <em>Ecological Monographs</em> 88 (4): 485–504. <a
+href="https://doi.org/10.1002/ecm.1309">https://doi.org/10.1002/ecm.1309</a>.
 </div>
 <div id="ref-Dormann2013" class="csl-entry">
 Dormann, Carsten F., Jane Elith, Sven Bacher, Carsten Buchmann, Gudrun
@@ -1065,6 +1097,11 @@ Regression</em>. 3rd ed. John Wiley &amp; Sons, Inc.
 Kéry, Marc, and J. Andrew Royle. 2015. <em>Applied Hierarchical Modeling
 in Ecology: Analysis of Distribution, Abundance and Species Richness in
 r and BUGS</em>. Elsevier.
+</div>
+<div id="ref-AICcmodavg" class="csl-entry">
+Mazerolle, Marc J. 2023. <em>AICcmodavg: Model Selection and Multimodel
+Inference Based on (q)AIC(c)</em>. <a
+href="https://cran.r-project.org/package=AICcmodavg">https://cran.r-project.org/package=AICcmodavg</a>.
 </div>
 <div id="ref-nagelkerke1991" class="csl-entry">
 Nagelkerke, N. J. D. 1991. <span>“A Note on a General Definition of the

@@ -4,8 +4,10 @@ models/GettingStarted/Outputs
 data/wc*
 models
 data/ESP*
-data/redkite*
 data/ebd*
 data/World*
 data/*Grass*
 data/*grass*
+data/*5km*
+data/redkite*
+data/*thinned*
