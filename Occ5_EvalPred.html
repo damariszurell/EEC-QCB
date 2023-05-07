@@ -711,13 +711,6 @@ grad.bio3.scaled &lt;- scale(grad.bio3, center=cov_means[&#39;bio_3&#39;], scale
 grad.cropland.scaled &lt;- scale(grad.cropland, center=cov_means[&#39;cropland&#39;], scale=cov_sd[&#39;cropland&#39;])
 grad.elev.scaled &lt;- scale(grad.elev, center=cov_means[&#39;ESP_elv&#39;], scale=cov_sd[&#39;ESP_elv&#39;])
 
-# Make prediction of state process (occupancy) - predictions are done separately for each gradient, while the other covariate is kep constant at their mean (mean=0 as the covariates were standardised)
-dummyData &lt;- data.frame(bio_3=grad.bio3.scaled, cropland=0)
-pred.occ.bio3 &lt;- predict(m_occdet, type=&quot;state&quot;, newdata=dummyData, appendData=TRUE)
-
-dummyData &lt;- data.frame(bio_3=0, cropland=grad.cropland.scaled)
-pred.occ.copland &lt;- predict(m_occdet, type=&quot;state&quot;, newdata=dummyData, appendData=TRUE)
-
 # Make occupancy prediction - predictions are done separately for each gradient, while the other covariate is kept constant at their mean (mean=0 as the covariates were standardised)
 dummyData &lt;- data.frame(bio_3=grad.bio3.scaled, cropland=0)
 pred.occ.bio3 &lt;- predict(m_occdet, type=&quot;state&quot;, newdata=dummyData, appendData=TRUE)
