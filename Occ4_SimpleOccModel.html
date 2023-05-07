@@ -868,7 +868,7 @@ cand_models &lt;- fitList(
   &quot;p(elev) psi(bio1.sqr + cropland.sqr)&quot; = occu(~ESP_elv ~ bio_1 +I(bio_1^2) + cropland + I(cropland^2), occ_env_redkite)
 )
 
-# Compute the summary output for model selection. When explicitly stating which candidate model refers is the null model, then a Nagelkerke R-square is computed.
+# Compute the summary output for model selection. When explicitly stating which candidate model is the null model, then a Nagelkerke R-square is computed.
 (m_sel &lt;- modSel(cand_models, nullmod=&quot;p(1) psi(1)&quot;))</code></pre>
 <pre><code>## Warning in sqrt(diag(vcov(x, altNames = TRUE))): NaNs produced</code></pre>
 <pre><code>##                                      nPars    AIC delta   AICwt cumltvWt
