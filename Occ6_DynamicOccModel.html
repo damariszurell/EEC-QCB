@@ -883,13 +883,13 @@ lines(pred.psi.forest[[1]] ~ grad.forest, lwd=3, col=&#39;blue&#39;)</code></pre
 <h2><span class="header-section-number">4.2</span> Goodness-of-fit
 test</h2>
 <p>To test how well the model fits the data, we can use an extension of
-the goodness-fit-test by <span class="citation">D. I. MacKenzie and
+the goodness-of-fit test by <span class="citation">D. I. MacKenzie and
 Bailey (2004)</span>. Conveniently, this is also implemented in the
 <code>mb.gof.test()</code> function in the package
 <code>AICcmodavg</code> <span class="citation">(Mazerolle 2023)</span>.
 Remember that it is recommended to simulate at least 1000 bootstrap
 samples, but this can take quite long. For illustrative purposes you
-could again reduce the number of bootstrap samples (set using by
+could again reduce the number of bootstrap samples (set by using
 argument <code>nsim</code>).</p>
 <pre class="r"><code>library(AICcmodavg)</code></pre>
 <pre class="r"><code># perform bootstrapped GoF-test
@@ -922,7 +922,7 @@ the model.</p>
 <p>As we can see from the model output, the model has a severe
 lack-of-fit. The <span class="math inline">\(\hat{c}&gt;4\)</span>
 (c-hat) indicates that we should not trust the model but should rather
-try to further improve it and, for example, add covariates to better
+try to further improve it, for example, by adding covariates to better
 explain the variance in the data. For simplicity, we will still continue
 working with this model to also illustrate the prediction step.</p>
 </div>
@@ -930,20 +930,21 @@ working with this model to also illustrate the prediction step.</p>
 number="4.3">
 <h2><span class="header-section-number">4.3</span> Predictive accuracy -
 outlook</h2>
-<p>Predictive accuracy of the these models to independent data (new
-times or new places) is rarely assessed. In principle, we could use
+<p>Predictive accuracy of these models to independent data (new times or
+new places) is rarely assessed. In principle, we could use
 discrimination measures to quantify how well our model predicts observed
 presences and absences of independent data. For example, <span
 class="citation">Briscoe et al. (2021)</span> collated all
-detection/non-detections across repeated surveys to a naïve occupancy
+detection/non-detections across repeated surveys to naïve occupancy
 estimates and then assessed disrimination ability of the models. Such
 discrimination measures are typically used in correlative species
-distribution models. Yet, we have to keep in mind that occupancy is a
-hidden process and our presence/absence observations are the outcome or
-combined effect of occupancy and detection. This is important to keep in
-mind for interpretation. Here, we are not learning any additional
+distribution models (SDM). Yet, we have to keep in mind for
+interpretation that occupancy is a hidden process and our
+presence/absence observations are the outcome or combined effect of
+occupancy and detection. Here, we are not learning any additional
 discrimination measures. If you are interested in these, we recommend to
-look into our tutorials for species distribution modelling (e.g. <a
+look into SDM literature <span class="citation">(e.g. Guisan, Thuiller,
+and Zimmermann 2017)</span> or at our SDM tutorials (e.g. <a
 href="https://damariszurell.github.io/EEC-MGC/b4_SDM_eval.html">here</a>).</p>
 </div>
 </div>
@@ -1145,6 +1146,11 @@ class="nocase">unmarked</span>: An <span>R</span> Package for Fitting
 Hierarchical Models of Wildlife Occurrence and Abundance.”</span>
 <em>Journal of Statistical Software</em> 43 (10): 1–23. <a
 href="https://www.jstatsoft.org/v43/i10/">https://www.jstatsoft.org/v43/i10/</a>.
+</div>
+<div id="ref-Guisan2017" class="csl-entry">
+Guisan, Antoine, Wilfried Thuiller, and Niklaus E. Zimmermann. 2017.
+<em>Habitat Suitability and Distribution Models with Applications in
+r</em>. Cambride University Press.
 </div>
 <div id="ref-Hanski1998" class="csl-entry">
 Hanski, Ilkka. 1998. <span>“Metapopulation Dynamics.”</span>
