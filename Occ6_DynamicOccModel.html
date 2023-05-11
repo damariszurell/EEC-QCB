@@ -66,6 +66,28 @@ if (window.hljs) {
 
 
 
+<style type="text/css">
+/* for pandoc --citeproc since 2.11 */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}
+</style>
 
 
 
@@ -422,8 +444,749 @@ in your folder “scripts” within your project folder, e.g. as
 “Occ6_DynamicOccModel.R”</li>
 </ul>
 </div>
-<p><em>Under construction …</em></p>
-<!-- # References -->
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>In this practical we turn to an extension of occupancy models to
+predicting changes in the occupancy status of sites across multiple
+seasons (years). Such range dynamics can be modelled using the so-called
+dynamic occupancy models <span class="citation">(D. I. MacKenzie et al.
+2003)</span>, also known as multiple-season occupancy models. Dynamic
+occupancy models explicitly model species colonisation of non-occupied
+sites and local extinctions at occupied sites <span
+class="citation">(Kéry, Guillera-Arroita, and Lahoz-Monfort 2013;
+Briscoe et al. 2021)</span>, similar to classic metapopulation models
+<span class="citation">(Hanski 1998)</span>. Occupancy or range dynamics
+over time are then simulated as a Markov process where the occupancy of
+a site is determined by the occupancy of the previous time step and the
+transition probability (colonisation probability of unoccupied sites and
+extinction probability of occupied sites). Additionally, dynamic
+occupancy models can explicitly consider imperfect detection as we
+already know from occupancy-detection models <span class="citation">(D.
+MacKenzie et al. 2006)</span> but can also be fitted without the
+observation process <span class="citation">(Kéry and Royle
+2021)</span>.</p>
+<p>Similar to before, accounting for this imperfect detection requires a
+hierarchical model structure in which we separately describe the state
+process, here the occupancy <span class="math inline">\(z_{it}\)</span>
+of a species at site <span class="math inline">\(i\)</span> in year
+<span class="math inline">\(t\)</span>, and the observation process,
+here the probability <span class="math inline">\(y_{ijt}\)</span> of
+observing a species at site <span class="math inline">\(i\)</span>
+during survey <span class="math inline">\(j\)</span> in year <span
+class="math inline">\(t\)</span> if the species is indeed present.</p>
+<p>Patch or site occupancy then depends on the initial occupancy <span
+class="math inline">\(\psi_{i1}\)</span> and the colonisation and
+extinction probabilities. The occupancy probability at time <span
+class="math inline">\(t+1\)</span> is given by:</p>
+<p><span class="math display">\[\psi_{i,t+1} = (1-\psi_{it}) \cdot
+\gamma_i + \psi_{it} \cdot (1-\epsilon_i)\]</span></p>
+<p>where a non-occupied site <span
+class="math inline">\((1-\psi_{it})\)</span> can become occupied with
+probability of colonisation <span
+class="math inline">\(\gamma_i\)</span> and an occupied site <span
+class="math inline">\(\psi_{it}\)</span> will remain occupied with
+survival probability <span class="math inline">\((1-\epsilon_i)\)</span>
+or go extinct with extinction probability <span
+class="math inline">\(\epsilon_i\)</span>. The probability to detect the
+species at an occupied site is <span
+class="math inline">\(p_{ijt}\)</span>. Four linked generalised linear
+models (GLMs) are used to describe these different states and processes
+(the initial occupancy <span class="math inline">\(\psi_{1}\)</span>,
+the probability of colonisation <span
+class="math inline">\(\gamma_i\)</span>, the probability of extinction
+<span class="math inline">\(\epsilon\)</span> and the probability of
+detection <span class="math inline">\(p\)</span>) and their relation to
+different site and survey covariates.</p>
+<p>Similar to static occupancy models, dynamic occupancy models assume
+closure (meaning the occupancy state does not change between replicate
+surveys within one season) and no false positives (meaning no
+misidentification of the species).</p>
+</div>
+<div id="case-study-range-dynamics-of-crossbill-in-switzerland"
+class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Case study: range
+dynamics of crossbill in Switzerland</h1>
+<p>In this practical, we are going to work with data from the Swiss
+common breeding birds survey (MHB) that has been running since 1999.
+Annual surveys are conducted in 267 sampling sites (1 km<sup>2</sup>
+cells) with three visits each year (two above the treeline). Data on
+repeated surveys per year during 1999-2007 are available for the red
+crossbill within the package <code>unmarked</code> <span
+class="citation">(Fiske and Chandler 2011)</span> and this example has
+also previously been used by <code>unmarked</code> vignettes to
+illustrate dynamic occupancy modelling.</p>
+<div id="data-preparation" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Data preparation</h2>
+<p>We load the data:</p>
+<pre class="r"><code>library(unmarked)
+
+# Load data for the red crossbill
+data(&quot;crossbill&quot;)
+
+# Inspect data
+head(crossbill)</code></pre>
+<pre><code>##   id  ele forest surveys det991 det992 det993 det001 det002 det003 det011
+## 1  1  450      3       3      0      0      0      0      0      0      0
+## 2  2  450     21       3      0      0      0      0      0      0      0
+## 3  3 1050     32       3     NA     NA     NA      0      0      0      1
+## 4  4  950      9       3      0      0      0      1      0      0      0
+## 5  5 1150     35       3      0      0      0      1      1      1      0
+## 6  6  550      2       3     NA     NA     NA      0      0      0      0
+##   det012 det013 det021 det022 det023 det031 det032 det033 det041 det042 det043
+## 1      0      0      0      0      0      0      0      0      0      0      0
+## 2      0      0      0      0      0      0      0      0      0      0      0
+## 3      1      0      0      0      0      1      1      1      0      0      0
+## 4      0      0      0      0      0      0      1      0      0      0      0
+## 5      0      1      1      0      0      1      1      0      1      1      0
+## 6      0      0      0      0      0      0      0      0      0      0      0
+##   det051 det052 det053 det061 det062 det063 det071 det072 det073 date991
+## 1      0      0      0      0      0      0      0      0      0      34
+## 2      0      0      0      0      0      0      0      0      0      17
+## 3      0      0      0      0      0      1      0      1      0      NA
+## 4      0      0      0      0      0      1      0      1      1      29
+## 5      1      0      0      0      0      0      1      1      1      24
+## 6      0      0      0      0      0      0      0      0      0      NA
+##   date992 date993 date001 date002 date003 date011 date012 date013 date021
+## 1      59      65      33      48      68      30      54      76      29
+## 2      33      65      22      50      66      14      28      61      13
+## 3      NA      NA      38      67      85      28      50      83      30
+## 4      59      65      33      48      68      24      54      76      39
+## 5      45      65      21      46      71      31      56      73      23
+## 6      NA      NA      22      35      72      27      55      80      28
+##   date022 date023 date031 date032 date033 date041 date042 date043 date051
+## 1      58      73      24      49      76      28      51      74      35
+## 2      39      62      18      40      68      23      38      59      20
+## 3      47      74      26      55      87      25      60      95      24
+## 4      61      77      31      62      76      24      54      74      22
+## 5      44      71      16      44      70      22      48      69      28
+## 6      56      73      24      51      60      27      55      64      27
+##   date052 date053 date061 date062 date063 date071 date072 date073
+## 1      52      73      19      56      65      20      46      54
+## 2      35      65      15      28      55      19      50      56
+## 3      59      87      23      62      90      22      55      61
+## 4      60      76      22      57      78      22      49      70
+## 5      51      73      23      42      70      15      43      60
+## 6      39      55      29      40      52      21      40      49</code></pre>
+<p>The data frame contains three different types of variables:</p>
+<ul>
+<li>Three site covariates: These covariates vary only by site
+(elevation, forest cover, number of surveys per season).</li>
+<li>Detection data: the 27 columns entitled “det991”–“det073” contain
+the detection/non detection information. NAs indicate that no survey was
+conducted.</li>
+<li>Survey covariates: the 27 columns entitled “date991” – “date073” are
+the survey covariates. Here, they only provide information on the date
+of each survey (given as day of year).</li>
+</ul>
+<p>Both the site covariates and the survey covariates contain
+<code>NA</code> values. The <code>unmarked</code> package will
+automatically remove these missing data during model fitting. To make
+sure that the same number of records are removed when fitting different
+candidate models, we set all observations to <code>NA</code> if site or
+survey covariates are missing.</p>
+<pre class="r"><code># Survey covariates, here only Date
+Date &lt;- as.matrix(crossbill[, 32:58]) 
+
+# Observations / Detection histories
+y.cross &lt;- as.matrix(crossbill[, 5:31]) 
+
+# Set all observations for which no survey covariate is available to NA
+y.cross[is.na(Date) != is.na(y.cross)] &lt;- NA
+
+# Site covariates
+siteCovs &lt;- crossbill[, 2:3]</code></pre>
+<p>In this example, we do not have any dynamic covariates that vary
+across years. We could still test whether the colonisation or extinction
+rates vary across time by using year as a dynamic “yearly”
+covariate.</p>
+<pre class="r"><code># Yearly site covariates
+year &lt;- matrix(as.character(1999:2007), nrow(crossbill), 9, byrow = TRUE)</code></pre>
+<p>As we already know from static occupancy-detection models, the
+numeric optimisation will stabilise more easily when the covariates are
+standardised.</p>
+<pre class="r"><code># Standardise survey covariates, here only Date
+Date &lt;- scale(Date)
+
+# Standardise site covariates
+siteCovs &lt;- scale(siteCovs)</code></pre>
+<p>Finally, we construct an <code>unmarkedMultFrame</code> object that
+is needed for the <code>colext()</code> function, which implements
+dynamic occupancy models following <span class="citation">D. I.
+MacKenzie et al. (2003)</span>.</p>
+<pre class="r"><code># Make unmarkedMultFrame for dynamic occupancy model
+crossbill_umf &lt;- unmarkedMultFrame(y = y.cross, # detection histories
+  siteCovs = data.frame(siteCovs),  # (static) site covariates
+  yearlySiteCovs = list(year = year), # list of yearly (dynamic) site covariates
+  obsCovs = list(date = Date), # list of survey covariates
+  numPrimary = 9) # number of primary time periods (here, number of years)</code></pre>
+</div>
+</div>
+<div id="fitting-dynamic-occupancy-models" class="section level1"
+number="3">
+<h1><span class="header-section-number">3</span> Fitting dynamic
+occupancy models</h1>
+<div id="simple-dynamic-occupancy-model-without-covariates"
+class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Simple dynamic
+occupancy model without covariates</h2>
+<p>The simplest model is the null model where we estimate only
+intercepts for the different parts of the model and thus assume that
+these parameters are constant across the entire study region: the
+initial occupancy <span class="math inline">\(\psi_{1}\)</span>, the
+probability of colonisation <span
+class="math inline">\(\gamma_i\)</span>, the probability of extinction
+<span class="math inline">\(\epsilon\)</span> and the probability of
+detection <span class="math inline">\(p\)</span>. For this, we will use
+the function <code>colext()</code> in the <code>unmarked</code> package.
+When you look up the help page <code>?colext</code> you will see that
+the function expects four different formulas for these four rates.</p>
+<pre class="r"><code># Null model with only intercepts (assuming constant rates across study region)
+dom_null &lt;- colext(psiformula = ~1,
+                   gammaformula = ~1,
+                   epsilonformula = ~1,
+                   pformula = ~1,
+                   data = crossbill_umf)
+
+# Inspect the fitted model:
+dom_null</code></pre>
+<pre><code>## 
+## Call:
+## colext(psiformula = ~1, gammaformula = ~1, epsilonformula = ~1, 
+##     pformula = ~1, data = crossbill_umf)
+## 
+## Initial:
+##  Estimate    SE     z  P(&gt;|z|)
+##    -0.794 0.154 -5.14 2.68e-07
+## 
+## Colonization:
+##  Estimate    SE     z P(&gt;|z|)
+##     -1.97 0.112 -17.6   4e-69
+## 
+## Extinction:
+##  Estimate    SE     z  P(&gt;|z|)
+##     -1.57 0.153 -10.2 1.29e-24
+## 
+## Detection:
+##  Estimate     SE    z P(&gt;|z|)
+##    0.0644 0.0564 1.14   0.254
+## 
+## AIC: 5193.503</code></pre>
+<p>The displayed output contains the estimates for the four states and
+process rates, and the AIC. As in static occupancy-detection models, all
+estimates are provided on the logit scale and we need to back transform
+them to get probability estimates between 0 and 1.</p>
+<pre class="r"><code># Get the names of the estimated rates as stored in the model object:
+names(dom_null)</code></pre>
+<pre><code>## [1] &quot;psi&quot; &quot;col&quot; &quot;ext&quot; &quot;det&quot;</code></pre>
+<pre class="r"><code># Use above names to extract and back transform the estimates:
+# Initial occupancy psi:
+backTransform(dom_null, type=&quot;psi&quot;)</code></pre>
+<pre><code>## Backtransformed linear combination(s) of Initial estimate(s)
+## 
+##  Estimate     SE LinComb (Intercept)
+##     0.311 0.0331  -0.794           1
+## 
+## Transformation: logistic</code></pre>
+<pre class="r"><code># Colonisation rate gamma:
+backTransform(dom_null, type=&quot;col&quot;)</code></pre>
+<pre><code>## Backtransformed linear combination(s) of Colonization estimate(s)
+## 
+##  Estimate     SE LinComb (Intercept)
+##     0.123 0.0121   -1.97           1
+## 
+## Transformation: logistic</code></pre>
+<pre class="r"><code># Extinction rate epsilon:
+backTransform(dom_null, type=&quot;ext&quot;)</code></pre>
+<pre><code>## Backtransformed linear combination(s) of Extinction estimate(s)
+## 
+##  Estimate     SE LinComb (Intercept)
+##     0.172 0.0219   -1.57           1
+## 
+## Transformation: logistic</code></pre>
+<pre class="r"><code># Detection probability p:
+backTransform(dom_null, type=&quot;det&quot;)</code></pre>
+<pre><code>## Backtransformed linear combination(s) of Detection estimate(s)
+## 
+##  Estimate     SE LinComb (Intercept)
+##     0.516 0.0141  0.0644           1
+## 
+## Transformation: logistic</code></pre>
+<p>We can also get the confidence interval around these estimates.</p>
+<pre class="r"><code># Detection probability p:
+confint(backTransform(dom_null, type=&quot;det&quot;))</code></pre>
+<pre><code>##      0.025    0.975
+##  0.4884587 0.543623</code></pre>
+<p>Results indicate that the crossbill has an initial occupancy of
+c. 0.3, meaning it is expected to occur in 30% of the study region, and
+has a detection probability of c. 0.5, meaning it can be observed with a
+50% chance.</p>
+</div>
+<div id="adding-covariates" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Adding
+covariates</h2>
+<p>We can add covariates to all four states and process rates. However,
+<span class="citation">Kéry and Royle (2021)</span> advice to add
+covariates in a stepwise manner as the opimisation algorithm can easily
+get stuck in local rather than global minima. They thus recommend,
+additional to scaling the covariates, to fit the model in a forward
+stepwise fashion progressively increasing model complexity while
+monitoring the negative log-likelihood. The latter can be extracted from
+the models using <code>dom_null@negLogLike</code>. It should decrease
+with increasing model complexity, else it may indicate local minima.
+Convergence could then be improved by varying the starting values for
+the optimisation algorithm and increasing the number of iterations. For
+more recommendations, take a look at chapter 4 of <span
+class="citation">Kéry and Royle (2021)</span>.</p>
+<p>Let’s fit a few - still comparably simple - models with covariates
+and then compare the models in terms of AIC. You will encounter longer
+computation times for more complex models.</p>
+<pre class="r"><code># Let only colonisation vary by year (note that -1 removes the intercept for simpler presentation)
+dom_1 &lt;- colext(psiformula = ~ 1, 
+                gammaformula = ~ year-1, 
+                epsilonformula = ~ 1, 
+                pformula = ~ 1, 
+                data = crossbill_umf)
+
+# Let only extinction vary by year
+dom_2 &lt;- colext(psiformula = ~ 1, 
+                gammaformula = ~ 1, 
+                epsilonformula = ~ year-1, 
+                pformula = ~ 1, 
+                data = crossbill_umf)
+
+# Let only detection vary by year
+dom_3 &lt;- colext(psiformula = ~ 1, 
+                gammaformula = ~ 1, 
+                epsilonformula = ~ 1, 
+                pformula = ~ year-1, 
+                data = crossbill_umf)
+
+# A fully time-dependent model
+dom_4 &lt;- colext(psiformula = ~ 1, 
+                gammaformula = ~ year-1, 
+                epsilonformula = ~ year-1, 
+                pformula = ~ year-1, 
+                data = crossbill_umf)
+
+# Compare the different models with time-dependence
+cand_models &lt;- fitList(
+  &#39;psi(.)gam(.)eps(.)p(.)&#39; = dom_null,
+  &#39;psi(.)gam(Y)eps(.)p(.)&#39; = dom_1,
+  &#39;psi(.)gam(.)eps(Y)p(.)&#39; = dom_2,
+  &#39;psi(.)gam(.)eps(.)p(Y)&#39; = dom_3,
+  &#39;psi(.)gam(Y)eps(Y)p(Y)&#39; = dom_4)
+(dom_sel &lt;- modSel(cand_models))</code></pre>
+<pre><code>##                        nPars     AIC delta   AICwt cumltvWt
+## psi(.)gam(.)eps(.)p(Y)    12 5111.31  0.00 1.0e+00     1.00
+## psi(.)gam(Y)eps(Y)p(Y)    26 5127.63 16.31 2.9e-04     1.00
+## psi(.)gam(Y)eps(.)p(.)    11 5179.09 67.77 1.9e-15     1.00
+## psi(.)gam(.)eps(Y)p(.)    11 5191.13 79.82 4.7e-18     1.00
+## psi(.)gam(.)eps(.)p(.)     4 5193.50 82.19 1.4e-18     1.00</code></pre>
+<p>Clearly, the model with year-dependent detection (<code>dom_3</code>)
+is the best. We will now start building up the initial occupancy
+part.</p>
+<pre class="r"><code># Keep time-dependent detection and build up initial occupancy
+# Add linear term for elevation
+dom_5 &lt;- colext(psiformula = ~ ele, 
+                gammaformula = ~ 1, 
+                epsilonformula = ~ 1, 
+                pformula = ~ year-1, 
+                data = crossbill_umf)
+
+# Add linear term for elevation and forest
+dom_6 &lt;- colext(psiformula = ~ ele + forest, 
+                gammaformula = ~ 1, 
+                epsilonformula = ~ 1, 
+                pformula = ~ year-1, 
+                data = crossbill_umf)
+
+# Add linear and quadratic term for elevation
+dom_7 &lt;- colext(psiformula = ~ ele + I(ele^2) + forest, 
+                gammaformula = ~ 1, 
+                epsilonformula = ~ 1, 
+                pformula = ~ year-1, 
+                data = crossbill_umf)
+
+# Add linear and quadratic term for elevation and forest
+dom_8 &lt;- colext(psiformula = ~ ele + I(ele^2) + forest + I(forest^2), 
+                gammaformula = ~ 1, 
+                epsilonformula = ~ 1, 
+                pformula = ~ year-1, 
+                data = crossbill_umf)
+
+# Compare the different models with time-dependence
+cand_models2 &lt;- fitList(
+  &#39;psi(.)gam(.)eps(.)p(.)&#39; = dom_null,
+  &#39;psi(.)gam(.)eps(.)p(Y)&#39; = dom_3,
+  &#39;psi(ele)gam(.)eps(.)p(Y)&#39; = dom_5,
+  &#39;psi(ele+forest)gam(.)eps(.)p(Y)&#39; = dom_6,
+  &#39;psi(ele+ele.sqr+forest)gam(.)eps(.)p(Y)&#39; = dom_7,
+  &#39;psi(ele+ele.sqr+forest+forest.sqr)gam(.)eps(.)p(Y)&#39; = dom_8)
+(dom_sel2 &lt;- modSel(cand_models2))</code></pre>
+<pre><code>##                                                    nPars     AIC  delta   AICwt
+## psi(ele+ele.sqr+forest+forest.sqr)gam(.)eps(.)p(Y)    16 5026.94   0.00 7.6e-01
+## psi(ele+ele.sqr+forest)gam(.)eps(.)p(Y)               15 5029.22   2.28 2.4e-01
+## psi(ele+forest)gam(.)eps(.)p(Y)                       14 5059.25  32.32 7.3e-08
+## psi(ele)gam(.)eps(.)p(Y)                              13 5099.60  72.67 1.3e-16
+## psi(.)gam(.)eps(.)p(Y)                                12 5111.31  84.38 3.6e-19
+## psi(.)gam(.)eps(.)p(.)                                 4 5193.50 166.57 5.1e-37
+##                                                    cumltvWt
+## psi(ele+ele.sqr+forest+forest.sqr)gam(.)eps(.)p(Y)     0.76
+## psi(ele+ele.sqr+forest)gam(.)eps(.)p(Y)                1.00
+## psi(ele+forest)gam(.)eps(.)p(Y)                        1.00
+## psi(ele)gam(.)eps(.)p(Y)                               1.00
+## psi(.)gam(.)eps(.)p(Y)                                 1.00
+## psi(.)gam(.)eps(.)p(.)                                 1.00</code></pre>
+<p>It seems the full model for initial occupancy is the best model. We
+would now proceed with this model and start building up colonisation,
+then extinction, and finally detection. But for simplicity, let’s move
+on to model assessment.</p>
+</div>
+</div>
+<div id="model-assessment" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Model assessment</h1>
+<div id="visualising-the-modelled-response" class="section level2"
+number="4.1">
+<h2><span class="header-section-number">4.1</span> Visualising the
+modelled response</h2>
+<p>We can visualise the modelled response for each of the four
+processes. We start by plotting the partial reponse curves for initial
+occupancy.</p>
+<pre class="r"><code># Create covariate gradients (at original scale):
+grad.ele &lt;- seq(min(crossbill$ele), max(crossbill$ele), length=100)
+grad.forest &lt;- seq(min(crossbill$forest), max(crossbill$forest), length=100)
+
+# Standardise them using the stored means and sd of our data
+grad.ele.scaled &lt;- scale(grad.ele, center=mean(crossbill$ele), scale=sd(crossbill$ele))
+grad.forest.scaled &lt;- scale(grad.forest, center=mean(crossbill$forest), scale=sd(crossbill$forest))
+
+# Make prediction of initial occupancy - predictions are done separately for each gradient, while the other covariate is kept constant at their mean (mean=0 as the covariates were standardised)
+dummyData &lt;- data.frame(ele=grad.ele.scaled, forest=0)
+pred.psi.ele &lt;- predict(dom_8, type=&quot;psi&quot;, newdata=dummyData, appendData=TRUE)
+
+dummyData &lt;- data.frame(ele=0, forest=grad.forest.scaled)
+pred.psi.forest &lt;- predict(dom_8, type=&quot;psi&quot;, newdata=dummyData, appendData=TRUE)
+
+# Plot the response curves for initial occupancy probability along the two gradients:
+par(mfrow = c(1,2))
+plot(pred.psi.ele[[1]] ~ grad.ele, type = &quot;n&quot;, ylim = c(0,1), ylab = &quot;Initial occupancy prob.&quot;, xlab = &quot;Elevation [m]&quot;) 
+polygon(c(grad.ele,rev(grad.ele)), c(pred.psi.ele[,3],rev(pred.psi.ele[,4])), col=&#39;grey&#39;, border=NA)
+lines(pred.psi.ele[[1]] ~ grad.ele, lwd=3, col=&#39;blue&#39;)
+
+# plot the response curves for occupancy probability along cropland gradient:
+plot(pred.psi.forest[[1]] ~ grad.forest, type = &quot;n&quot;, ylim = c(0,1), ylab = &quot;Initial occupancy prob.&quot;, xlab = &quot;Forest cover [%]&quot;) 
+polygon(c(grad.forest,rev(grad.forest)), c(pred.psi.forest[,3],rev(pred.psi.forest[,4])), col=&#39;grey&#39;, border=NA)
+lines(pred.psi.forest[[1]] ~ grad.forest, lwd=3, col=&#39;blue&#39;)</code></pre>
+<p><img src="Occ6_DynamicOccModel_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+<div id="goodness-of-fit-test" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Goodness-of-fit
+test</h2>
+<p>To test how well the model fits the data, we can use an extension of
+the goodness-fit-test by <span class="citation">D. I. MacKenzie and
+Bailey (2004)</span>. Conveniently, this is also implemented in the
+<code>mb.gof.test()</code> function in the package
+<code>AICcmodavg</code> <span class="citation">(Mazerolle 2023)</span>.
+Remember that it is recommended to simulate at least 1000 bootstrap
+samples, but this can take quite long. For illustrative purposes you
+could again reduce the number of bootstrap samples (set using by
+argument <code>nsim</code>).</p>
+<pre class="r"><code>library(AICcmodavg)</code></pre>
+<pre class="r"><code># perform bootstrapped GoF-test
+(gof.results &lt;- mb.gof.test(dom_8, nsim=1000))</code></pre>
+<pre><code>## 
+## Goodness-of-fit for dynamic occupancy model
+## 
+## Number of seasons:  9 
+## 
+## Chi-square statistic:
+## Season 1 Season 2 Season 3 Season 4 Season 5 Season 6 Season 7 Season 8 
+##  28.0624  17.9722  75.9222  28.4517  34.6810  36.3121  29.9120  34.1002 
+## Season 9 
+##  41.8516 
+## 
+## Total chi-square = 327.2655 
+## Number of bootstrap samples = 1000
+## P-value = 0
+## 
+## Quantiles of bootstrapped statistics:
+##   0%  25%  50%  75% 100% 
+##   45   68   76   85  135 
+## 
+## Estimate of c-hat = 4.25</code></pre>
+<p>The <em>p</em>-value indicates the probability of the null hypothesis
+that there is no lack of fit and thus no major differences between
+expected and observed frequencies. A value <span
+class="math inline">\(p≤0.05\)</span> would indicate a lack-of-fit of
+the model.</p>
+<p>As we can see from the model output, the model has a severe
+lack-of-fit. The <span class="math inline">\(\hat{c}&gt;4\)</span>
+(c-hat) indicates that we should not trust the model but should rather
+try to further improve it and, for example, add covariates to better
+explain the variance in the data. For simplicity, we will still continue
+working with this model to also illustrate the prediction step.</p>
+</div>
+<div id="predictive-accuracy---outlook" class="section level2"
+number="4.3">
+<h2><span class="header-section-number">4.3</span> Predictive accuracy -
+outlook</h2>
+<p>Predictive accuracy of the these models to independent data (new
+times or new places) is rarely assessed. In principle, we could use
+discrimination measures to quantify how well our model predicts observed
+presences and absences of independent data. For example, <span
+class="citation">Briscoe et al. (2021)</span> collated all
+detection/non-detections across repeated surveys to a naïve occupancy
+estimates and then assessed disrimination ability of the models. Such
+discrimination measures are typically used in correlative species
+distribution models. Yet, we have to keep in mind that occupancy is a
+hidden process and our presence/absence observations are the outcome or
+combined effect of occupancy and detection. This is important to keep in
+mind for interpretation. Here, we are not learning any additional
+discrimination measures. If you are interested in these, we recommend to
+look into our tutorials for species distribution modelling (e.g. <a
+href="https://damariszurell.github.io/EEC-MGC/b4_SDM_eval.html">here</a>).</p>
+</div>
+</div>
+<div id="model-predictions" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Model predictions</h1>
+<p>We have already used the generic <code>predict()</code> function
+above to predict initial occupancy. We can do the same for predicting
+the colonisation and extinction rates as well as detection probabilities
+in the different locations and years, given the covariates <span
+class="citation">(Kéry, Guillera-Arroita, and Lahoz-Monfort
+2013)</span>. While such information is useful, it does not yet offer an
+estimate of occupancy for each year of the time series. To obtain
+occupancy estimates for the remaining years, we have to run simulations
+<span class="citation">(Briscoe et al. 2021)</span>, which we will see
+at the end of this practical.</p>
+<div id="mapping-the-predicted-responses" class="section level2"
+number="5.1">
+<h2><span class="header-section-number">5.1</span> Mapping the predicted
+responses</h2>
+<p>We want to map the modelled response in space and for this need to
+first prepare the geographic layers. In practical Occ-3, we have already
+learned how to obtain elevation maps and tree cover maps with the
+<code>geodata</code> package.</p>
+<pre><code>## terra 1.7.29</code></pre>
+<pre class="r"><code>library(geodata)
+library(terra)
+
+# Let&#39;s first find out which country code Switzerland has
+grep(&#39;Switzerland&#39;,geodata::country_codes()$NAME)
+geodata::country_codes()[grep(&#39;Switzerland&#39;,geodata::country_codes()$NAME),]
+
+# Get elevation data for Switzerland
+elev_CHE &lt;- geodata::elevation_30s(country=&#39;CHE&#39;, path=&#39;data&#39;, mask=T)
+
+# Get tree cover data (we need it in percent!) and crop to Switzerland
+forest_CHE &lt;- geodata::landcover(var=&#39;trees&#39;, path=&#39;data&#39;, download=F)*100
+forest_CHE &lt;- terra::crop(forest_CHE, elev_CHE)
+forest_CHE &lt;- terra::mask(forest_CHE, elev_CHE)</code></pre>
+<p>Now we can make predictions and map our different responses: the
+initial occupancy <span class="math inline">\(\psi_{1}\)</span>, the
+probability of colonisation <span
+class="math inline">\(\gamma_i\)</span>, the probability of extinction
+<span class="math inline">\(\epsilon\)</span> and the probability of
+detection <span class="math inline">\(p\)</span>. In our model
+<code>dom_8</code>, only the initial occupancy varies across space, we
+restrict mapping to this process. We still compute also the predictions
+of <span class="math inline">\(\gamma\)</span> and <span
+class="math inline">\(\epsilon\)</span> at each site (Note that we did
+not include time-dependence in these submodels). These predictions are
+needed for later simulations of occupancy across time. We do not need
+predictions of detection probability for these simulations. As detection
+probability did not vary across space in our model <code>dom_8</code>,
+we do not map it either.</p>
+<pre class="r"><code># Prepare data frame with all site covariates
+CHE_env &lt;- data.frame(crds(elev_CHE),as.points(elev_CHE),as.points(forest_CHE))
+names(CHE_env)[3:4] &lt;- c(&#39;ele&#39;, &#39;forest&#39;)
+
+# Scale the data
+CHE_env$ele &lt;- scale(CHE_env$ele, center=mean(crossbill$ele), scale=sd(crossbill$ele))
+CHE_env$forest &lt;- scale(CHE_env$forest, center=mean(crossbill$forest), scale=sd(crossbill$forest))
+
+# Predict initial occupancy probability per site
+psi1 &lt;- predict(dom_8, type=&quot;psi&quot;, newdata=CHE_env, appendData=TRUE)
+plot(terra::rast(psi1[,c(&#39;x&#39;,&#39;y&#39;,&#39;Predicted&#39;)], type=&#39;xyz&#39;, crs=crs(elev_CHE)))</code></pre>
+<p><img src="Occ6_DynamicOccModel_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>psi1_pred &lt;- psi1$Predicted
+
+# Predict colonisation probability per site
+col &lt;- predict(dom_8, type=&quot;col&quot;, newdata=CHE_env, appendData=TRUE)
+col_pred &lt;- col$Predicted
+
+# Predict extinction probability per site
+ext &lt;- predict(dom_8, type=&quot;ext&quot;, newdata=CHE_env, appendData=TRUE)
+ext_pred &lt;- ext$Predicted</code></pre>
+</div>
+<div id="simulating-occupancy" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Simulating
+occupancy</h2>
+<p>For simulating occupancy, we need the spatial and temporal
+predictions from above. Based on these, we first draw the initial
+occurrence state of each site from Bernoulli trials using the initial
+occupancy probability. Then, we calculate the occupancy probability at
+time <span class="math inline">\(t+1\)</span> using the function we have
+seen earlier:</p>
+<p><span class="math display">\[\psi_{i,t+1} = (1-\psi_{it}) \cdot
+\gamma_i + \psi_{it} \cdot (1-\epsilon_i)\]</span></p>
+<p>Once we know the occupancy probability at time <span
+class="math inline">\(t+1\)</span>, we can then draw the occurrence
+state of each site at time <span class="math inline">\(t+1\)</span> from
+a Bernoulli trial. We do this for all subsequent time steps and repeat
+the procedure e.g. 1000 times or more. For simplicity and illustrative
+purposes, you can again reduce the number of simulations.</p>
+<pre class="r"><code># Set number of stochastic simulations to run:
+nsim &lt;- 1000
+
+# Number of sites
+nsites &lt;- nrow(CHE_env)
+
+# Number of primary seasons
+nyears &lt;- crossbill_umf@numPrimary
+
+# Create empty list to store the simulated occupancy states
+Zs &lt;- list()
+
+# Creat empty matrix to store mean occupancy
+prev_sim &lt;- matrix(NA, nsim, nyears)
+
+# Loop through the number of simulations and compute occupancy
+for (nn in seq_len(nsim)){
+  
+  # Create empty matrix to store occupancy for the current simulation
+  Z &lt;- matrix(NA, nsites, nyears)
+  
+  # Draw initial occupancy state from Bernoulli trial
+  Z[,1] &lt;- rbinom(nsites,1,psi1_pred)
+  
+  # Loop through subsequent years
+  for (yy in 2:nyears) {
+    # Compute occupancy probability based on colonisation and extinction probabilities and occupancy from previous year
+    # Remember that our col and ext are constant over time, which may not always be the case
+    occ_prob &lt;- Z[,yy-1]*(1-ext_pred)+(1-Z[,yy-1])*col_pred
+    
+    # Draw occupancy state from Bernoulli trial
+    Z[,yy] &lt;- rbinom(nsites,1,occ_prob)
+  }
+  
+  # Store results
+  Zs[[nn]] &lt;- Z
+  prev_sim[nn,] &lt;- colMeans(Z)
+}</code></pre>
+<p>Finally, from the simulation results, we plot the predicted change in
+mean occupancy (prevalence) over time and map the predicted mean
+occupancy in each year.</p>
+<pre class="r"><code># Summarise the mean occupancy (prevalence) over time:
+mean_prev &lt;- data.frame(year=as.character(1999:2007), mean_prev=colMeans(prev_sim), sd_prev=apply(prev_sim,2,sd))
+
+# Plot mean occupancy (prevalence) and sd:
+library(ggplot2)
+ggplot(mean_prev, aes(x=year, y=mean_prev, group=1)) + 
+  geom_errorbar(aes(ymin=mean_prev-sd_prev, ymax=mean_prev+sd_prev), width=.1) +
+  geom_line() +
+  geom_point() +
+  xlab(&quot;Year&quot;) + ylab(&quot;Predicted mean occupancy&quot;)</code></pre>
+<p><img src="Occ6_DynamicOccModel_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>We see that our mean occupancy is increasing over time. Next, we want
+to map the mean predicted occupancy per year.</p>
+<pre class="r"><code># Calculate mean occupancy per cell over all simulations
+Zs_mean &lt;- Reduce(&#39;+&#39;,Zs)/nsim
+
+# Convert to data frame and rename columns
+Zs_mean &lt;- data.frame(Zs_mean)
+names(Zs_mean) &lt;- paste0(&#39;Year_&#39;,(1999:2007))
+
+# Merge with spatial information
+Zs_mean &lt;- data.frame(CHE_env[,1:2], Zs_mean)</code></pre>
+<pre class="r"><code># Convert to SpatRaster
+r_Zs_mean &lt;- terra::rast(Zs_mean, type=&#39;xyz&#39;, crs=crs(elev_CHE))
+
+# Map predicted mean occupancy
+library(raster)
+raster::spplot(r_Zs_mean)</code></pre>
+<p><img src="Occ6_DynamicOccModel_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p>Don’t forget to save your results.</p>
+<pre class="r"><code>save(Zs,Zs_mean,prev_sim,file=&#39;results/dynocc_sim1000.RData&#39;)</code></pre>
+<p>We see that local mean occupancy actually decreases over time and the
+spatial occupancy patterns seem to become more blurred. This is not
+unexpected as we haven’t yet included any covariates to our colonisation
+and extinction models and thus each site as equal colonisation and
+extinction probabilities. As our GoF-test indicated, our model seems to
+be missing important covariate information and we would thus re-initiate
+the modelling cycle to further improve the model.</p>
+<!-- Check codes from AHMbook: https://github.com/mikemeredith/AHM_code/tree/main -->
+<div class="alert alert-info">
+<p><em><strong>Exercise:</strong></em></p>
+<ul>
+<li>Continue building up the covariate model by adding covariates for
+extinction and detection and comparing the results step by step. Add
+date as a covariate in the detection model.</li>
+<li>Assess the goodness-of-fit of the model.</li>
+<li>Plot the partial response curves.</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="unnumbered">References</h1>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-Briscoe2021" class="csl-entry">
+Briscoe, Natalie J., Damaris Zurell, Jane Elith, Christian Koenig,
+Guillermo Fandos, Anne-Kathleen Malchow, Marc Kéry, Hans Schmid, and
+Gurutzeta Guillera-Arroita. 2021. <span>“Can Dynamic Occupancy Models
+Improve Predictions of Species’ Range Dynamics? A Test Using Swiss
+Birds.”</span> <em>Global Change Biology</em> 27 (18): 4269–82. <a
+href="https://doi.org/10.1111/gcb.15723">https://doi.org/10.1111/gcb.15723</a>.
+</div>
+<div id="ref-unmarked2011" class="csl-entry">
+Fiske, Ian, and Richard Chandler. 2011. <span>“<span
+class="nocase">unmarked</span>: An <span>R</span> Package for Fitting
+Hierarchical Models of Wildlife Occurrence and Abundance.”</span>
+<em>Journal of Statistical Software</em> 43 (10): 1–23. <a
+href="https://www.jstatsoft.org/v43/i10/">https://www.jstatsoft.org/v43/i10/</a>.
+</div>
+<div id="ref-Hanski1998" class="csl-entry">
+Hanski, Ilkka. 1998. <span>“Metapopulation Dynamics.”</span>
+<em>Nature</em> 396 (6706): 41–49.
+</div>
+<div id="ref-Kery2013" class="csl-entry">
+Kéry, Marc, Gurutzeta Guillera-Arroita, and José J. Lahoz-Monfort. 2013.
+<span>“Analysing and Mapping Species Range Dynamics Using Occupancy
+Models.”</span> <em>Journal of Biogeography</em> 40 (8): 1463–74. <a
+href="https://doi.org/10.1111/jbi.12087">https://doi.org/10.1111/jbi.12087</a>.
+</div>
+<div id="ref-Kery2021" class="csl-entry">
+Kéry, Marc, and J. Andrew Royle. 2021. <em>Applied Hierarchical Modeling
+in Ecology: Analysis of Distribution, Abundance and Species Richness in
+r and <span>BUGS</span></em>. Elsevier. <a
+href="https://doi.org/10.1016/c2015-0-04070-9">https://doi.org/10.1016/c2015-0-04070-9</a>.
+</div>
+<div id="ref-MacKenzie_2004" class="csl-entry">
+MacKenzie, Darryl I., and Larissa L. Bailey. 2004. <span>“Assessing the
+Fit of Site-Occupancy Models.”</span> <em>Journal of Agricultural,
+Biological, and Environmental Statistics</em> 9 (3): 300–318. <a
+href="https://doi.org/10.1198/108571104x3361">https://doi.org/10.1198/108571104x3361</a>.
+</div>
+<div id="ref-MacKenzie2003" class="csl-entry">
+MacKenzie, Darryl I., James D. Nichols, James E. Hines, Melinda G.
+Knutson, and Alan B. Franklin. 2003. <span>“Estimating Site Occupancy,
+Colonization, and Local Extinction When a Species Is Detected
+Imperfectly.”</span> <em>Ecology</em> 84 (8): 2200–2207. <a
+href="https://doi.org/10.1890/02-3090">https://doi.org/10.1890/02-3090</a>.
+</div>
+<div id="ref-MacKenzie2006" class="csl-entry">
+MacKenzie, Darryl, James Nichols, J. Royle, Kenneth Pollock, Larissa
+Bailey, and James Hines. 2006. <em>Occupancy Estimation and
+Modeling</em>. 1st ed. Elsevier.
+</div>
+<div id="ref-AICcmodavg" class="csl-entry">
+Mazerolle, Marc J. 2023. <em>AICcmodavg: Model Selection and Multimodel
+Inference Based on (q)AIC(c)</em>. <a
+href="https://cran.r-project.org/package=AICcmodavg">https://cran.r-project.org/package=AICcmodavg</a>.
+</div>
+</div>
+</div>
 
 <!DOCTYPE html>
 <html>

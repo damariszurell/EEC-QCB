@@ -808,10 +808,10 @@ Here, we are using the <code>spplot()</code> function from the library
 <pre class="r"><code>library(raster)
 
 # Map predicted occupancy along with its standard error
-spplot(pred_occ_r, main=&quot;Predicted occupancy&quot;)</code></pre>
+raster::spplot(pred_occ_r, main=&quot;Predicted occupancy&quot;)</code></pre>
 <p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre class="r"><code># Map predicted detectability along with its standard error
-spplot(pred_det_r, main=&quot;Predicted detectability&quot;)</code></pre>
+raster::spplot(pred_det_r, main=&quot;Predicted detectability&quot;)</code></pre>
 <p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
