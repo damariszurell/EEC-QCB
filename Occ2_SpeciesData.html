@@ -538,29 +538,29 @@ default). For the query, we have to provide the personal access token
 for the API.</p>
 <pre class="r"><code># Find all eBird reportings of red kite in Spain in the last 30 days: 
 ebirdregion(loc = &#39;ES&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBIRD_KEY)</code></pre>
-<pre><code>## # A tibble: 2,016 × 13
+<pre><code>## # A tibble: 1,477 × 13
 ##    speciesCode comName sciName locId locName obsDt howMany   lat    lng obsValid
 ##    &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt;   
-##  1 redkit1     Red Ki… Milvus… L238… 52-50 … 2023…       1  40.7 -3.99  TRUE    
-##  2 redkit1     Red Ki… Milvus… L456… Son Bo… 2023…       1  39.8  3.11  TRUE    
-##  3 redkit1     Red Ki… Milvus… L238… Via se… 2023…       4  41.8  0.974 TRUE    
-##  4 redkit1     Red Ki… Milvus… L797… Es Bla… 2023…       5  39.7  3.07  TRUE    
-##  5 redkit1     Red Ki… Milvus… L223… Villac… 2023…       4  40.8 -4.41  TRUE    
-##  6 redkit1     Red Ki… Milvus… L163… Narril… 2023…       1  40.6 -5.47  TRUE    
-##  7 redkit1     Red Ki… Milvus… L480… Emb. S… 2023…       3  40.7 -3.81  TRUE    
-##  8 redkit1     Red Ki… Milvus… L113… Borau,… 2023…       5  42.7 -0.573 TRUE    
-##  9 redkit1     Red Ki… Milvus… L868… Aguasa… 2023…       1  41.3 -4.65  TRUE    
-## 10 redkit1     Red Ki… Milvus… L518… Torres… 2023…       1  42.1  0.379 TRUE    
-## # ℹ 2,006 more rows
+##  1 redkit1     Red Ki… Milvus… L188… 2 Call… 2023…       2  40.6 -4.01  TRUE    
+##  2 redkit1     Red Ki… Milvus… L237… Balsa … 2023…       1  42.8 -1.72  TRUE    
+##  3 redkit1     Red Ki… Milvus… L541… Aldehu… 2023…       2  40.7 -6.24  TRUE    
+##  4 redkit1     Red Ki… Milvus… L206… Badost… 2023…       1  42.8 -1.60  TRUE    
+##  5 redkit1     Red Ki… Milvus… L191… Camarm… 2023…       1  40.5 -3.37  TRUE    
+##  6 redkit1     Red Ki… Milvus… L246… Rueda … 2023…       1  41.7 -1.34  TRUE    
+##  7 redkit1     Red Ki… Milvus… L180… Barran… 2023…       3  42.3 -0.637 TRUE    
+##  8 redkit1     Red Ki… Milvus… L971… Sierra… 2023…       1  40.7 -4.44  TRUE    
+##  9 redkit1     Red Ki… Milvus… L633… Río So… 2023…       1  42.2 -0.554 TRUE    
+## 10 redkit1     Red Ki… Milvus… L774… Embals… 2023…       1  41.7 -5.81  TRUE    
+## # ℹ 1,467 more rows
 ## # ℹ 3 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;, subId &lt;chr&gt;</code></pre>
 <p>To access periods that are longer away than the last 30 days, we can
 use the function <code>ebirdhistorical()</code>.</p>
 <pre class="r"><code>library(tidyverse)</code></pre>
 <pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.4.2      ✔ purrr   1.0.1 
-## ✔ tibble  3.2.1      ✔ dplyr   1.0.10
-## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
-## ✔ readr   2.1.4      ✔ forcats 0.5.2 
+## ✔ ggplot2 3.4.2     ✔ purrr   1.0.1
+## ✔ tibble  3.2.1     ✔ dplyr   1.1.2
+## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
+## ✔ readr   2.1.4     ✔ forcats 0.5.2
 ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## ✖ dplyr::filter() masks stats::filter()
 ## ✖ dplyr::lag()    masks stats::lag()</code></pre>
@@ -571,7 +571,7 @@ ebirdhistorical(loc = &#39;ES&#39;, date=&#39;2022-06-01&#39;, fieldSet=&#39;ful
 <pre><code>## # A tibble: 1 × 28
 ##   speciesCode comName  sciName  locId locName obsDt howMany   lat   lng obsValid
 ##   &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;   
-## 1 redkit1     Red Kite Milvus … L190… Arroyo… 2022…       2  40.9 -5.67 TRUE    
+## 1 redkit1     Red Kite Milvus … L215… Salama… 2022…       2  41.0 -5.68 TRUE    
 ## # ℹ 18 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;, subId &lt;chr&gt;,
 ## #   subnational1Code &lt;chr&gt;, subnational1Name &lt;chr&gt;, countryCode &lt;chr&gt;,
 ## #   countryName &lt;chr&gt;, userDisplayName &lt;chr&gt;, obsId &lt;chr&gt;, checklistId &lt;chr&gt;,
@@ -760,8 +760,8 @@ data as above. Also prepare the map for illustration.</li>
 <li>To make this task a little bit more difficult, you may choose also a
 different country. But be aware that eBird data tend to be sparse in
 Europe (except Spain). They are much more used in US. Should you choose
-US, you may want to consider focusing on a specific state as the data
-eBird volume for US can be massive.</li>
+US, you may want to consider focusing on a specific state as the eBird
+data volume for US can be massive.</li>
 </ul>
 </div>
 </div>

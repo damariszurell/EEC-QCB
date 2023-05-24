@@ -522,13 +522,13 @@ clim_1km</code></pre>
 <pre class="r"><code>terra::plot(clim_1km)</code></pre>
 <p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre class="r"><code># The climate data are provided within a larger spatial extent than the elevation data, and we thus crop them
-clim_1km &lt;- terra::crop(clim_1km, elev_Esp_1km)
+clim_1km_Esp &lt;- terra::crop(clim_1km, elev_Esp_1km)
 
 # Aggregate to 2.5 min spatial resolution
-clim_5km &lt;- terra::aggregate(clim_1km, fact=5)
+clim_5km_Esp &lt;- terra::aggregate(clim_1km_Esp, fact=5)
 
 # Plot the climate data
-terra::plot(clim_5km)</code></pre>
+terra::plot(clim_5km_Esp)</code></pre>
 <p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
 <div id="future-climate-scenarios" class="section level2" number="2.1">
 <h2><span class="header-section-number">2.1</span> Future climate
@@ -559,10 +559,10 @@ provided as 30 x 30 degree spatial windows.</p>
 clim_fut_5km &lt;- geodata::cmip6_world(model=&#39;ACCESS-ESM1-5&#39;, ssp=&#39;245&#39;, time=&#39;2041-2060&#39;, var=&#39;bioc&#39;, download=F, res=2.5, path=&#39;data&#39;)
 
 # Crop to same extent as current climate
-clim_fut_5km &lt;- terra::crop(clim_fut_5km, clim_5km)
+clim_fut_5km_Esp &lt;- terra::crop(clim_fut_5km, clim_5km_Esp)
 
 # Inspect and map the SpatRaster object:
-clim_fut_5km</code></pre>
+clim_fut_5km_Esp</code></pre>
 <pre><code>## class       : SpatRaster 
 ## dimensions  : 212, 339, 19  (nrow, ncol, nlyr)
 ## resolution  : 0.04166667, 0.04166667  (x, y)
@@ -572,35 +572,35 @@ clim_fut_5km</code></pre>
 ## names       : wc2_1, wc2_2, wc2_3, wc2_4, wc2_5, wc2_6, ... 
 ## min values  :   2.9,   3.4,  27.8, 222.1,  21.0,  -9.5, ... 
 ## max values  :  23.1,  15.9,  47.6, 900.7,  43.7,  13.0, ...</code></pre>
-<pre class="r"><code>plot(clim_fut_5km)</code></pre>
+<pre class="r"><code>plot(clim_fut_5km_Esp)</code></pre>
 <p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>We see that the current and future climate <code>SpatRaster</code>
 objects have different layer names. This could cause problems in
 occupancy modelling and we thus want make sure that they all have the
 same layer names.</p>
 <pre class="r"><code># Inspect layer names
-names(clim_1km)</code></pre>
+names(clim_1km_Esp)</code></pre>
 <pre><code>##  [1] &quot;wc2.1_30s_bio_1&quot;  &quot;wc2.1_30s_bio_2&quot;  &quot;wc2.1_30s_bio_3&quot;  &quot;wc2.1_30s_bio_4&quot; 
 ##  [5] &quot;wc2.1_30s_bio_5&quot;  &quot;wc2.1_30s_bio_6&quot;  &quot;wc2.1_30s_bio_7&quot;  &quot;wc2.1_30s_bio_8&quot; 
 ##  [9] &quot;wc2.1_30s_bio_9&quot;  &quot;wc2.1_30s_bio_10&quot; &quot;wc2.1_30s_bio_11&quot; &quot;wc2.1_30s_bio_12&quot;
 ## [13] &quot;wc2.1_30s_bio_13&quot; &quot;wc2.1_30s_bio_14&quot; &quot;wc2.1_30s_bio_15&quot; &quot;wc2.1_30s_bio_16&quot;
 ## [17] &quot;wc2.1_30s_bio_17&quot; &quot;wc2.1_30s_bio_18&quot; &quot;wc2.1_30s_bio_19&quot;</code></pre>
-<pre class="r"><code>names(clim_5km)</code></pre>
+<pre class="r"><code>names(clim_5km_Esp)</code></pre>
 <pre><code>##  [1] &quot;wc2.1_30s_bio_1&quot;  &quot;wc2.1_30s_bio_2&quot;  &quot;wc2.1_30s_bio_3&quot;  &quot;wc2.1_30s_bio_4&quot; 
 ##  [5] &quot;wc2.1_30s_bio_5&quot;  &quot;wc2.1_30s_bio_6&quot;  &quot;wc2.1_30s_bio_7&quot;  &quot;wc2.1_30s_bio_8&quot; 
 ##  [9] &quot;wc2.1_30s_bio_9&quot;  &quot;wc2.1_30s_bio_10&quot; &quot;wc2.1_30s_bio_11&quot; &quot;wc2.1_30s_bio_12&quot;
 ## [13] &quot;wc2.1_30s_bio_13&quot; &quot;wc2.1_30s_bio_14&quot; &quot;wc2.1_30s_bio_15&quot; &quot;wc2.1_30s_bio_16&quot;
 ## [17] &quot;wc2.1_30s_bio_17&quot; &quot;wc2.1_30s_bio_18&quot; &quot;wc2.1_30s_bio_19&quot;</code></pre>
-<pre class="r"><code>names(clim_fut_5km)</code></pre>
+<pre class="r"><code>names(clim_fut_5km_Esp)</code></pre>
 <pre><code>##  [1] &quot;wc2_1&quot;  &quot;wc2_2&quot;  &quot;wc2_3&quot;  &quot;wc2_4&quot;  &quot;wc2_5&quot;  &quot;wc2_6&quot;  &quot;wc2_7&quot;  &quot;wc2_8&quot; 
 ##  [9] &quot;wc2_9&quot;  &quot;wc2_10&quot; &quot;wc2_11&quot; &quot;wc2_12&quot; &quot;wc2_13&quot; &quot;wc2_14&quot; &quot;wc2_15&quot; &quot;wc2_16&quot;
 ## [17] &quot;wc2_17&quot; &quot;wc2_18&quot; &quot;wc2_19&quot;</code></pre>
 <pre class="r"><code># Overwrite all climate layer names (Careful, you should only do this when you are certain that all variables are ordered in the same way)
-names(clim_1km) &lt;- names(clim_5km) &lt;- names(clim_fut_5km) &lt;- paste(&#39;bio&#39;,1:19,sep=&#39;_&#39;)</code></pre>
+names(clim_1km_Esp) &lt;- names(clim_5km_Esp) &lt;- names(clim_fut_5km_Esp) &lt;- paste(&#39;bio&#39;,1:19,sep=&#39;_&#39;)</code></pre>
 <p>You can also write <code>SpatRaster</code> objects to file. Here, we
 save the <code>SpatRaster</code> objects in a GeoTiff:</p>
-<pre class="r"><code>terra::writeRaster(clim_5km,filename=&#39;data/bioclim_ESP_5km.tif&#39;)
-terra::writeRaster(clim_fut_5km,filename=&#39;data/bioclim_fut_ESP_5km.tif&#39;)</code></pre>
+<pre class="r"><code>terra::writeRaster(clim_5km_Esp,filename=&#39;data/bioclim_ESP_5km.tif&#39;)
+terra::writeRaster(clim_fut_5km_Esp,filename=&#39;data/bioclim_fut_ESP_5km.tif&#39;)</code></pre>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>
@@ -630,33 +630,33 @@ equator). For illustration, let`s download tree cover globally.</p>
 trees_1km &lt;- geodata::landcover(var=&#39;trees&#39;, path=&#39;data&#39;, download=F)
 
 # Crop to study area extent
-trees_1km &lt;- terra::crop(trees_1km, elev_Esp_1km)
+trees_1km_Esp &lt;- terra::crop(trees_1km, elev_Esp_1km)
 
 # map the tree cover
-plot(trees_1km)</code></pre>
+plot(trees_1km_Esp)</code></pre>
 <p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>Above, we used climate data at 2.5-min (roughly 5 km) spatial
 resolution. To obtain the same spatial resolution for the land cover, we
 have to aggregate the <code>SpatRaster</code> object.</p>
 <pre class="r"><code># Aggregate tree cover to 2.5-min spatial resolution (roughly 5 km)
-trees_5km &lt;- terra::aggregate(trees_1km, fact=5, fun=&#39;mean&#39;)
+trees_5km_Esp &lt;- terra::aggregate(trees_1km_Esp, fact=5, fun=&#39;mean&#39;)
 
 # Map the 2.5-min tree cover (roughly 5 km)
-plot(trees_5km)</code></pre>
+plot(trees_5km_Esp)</code></pre>
 <p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code># Save to file
-terra::writeRaster(trees_5km,filename=&#39;data/trees_5km.tif&#39;)</code></pre>
+terra::writeRaster(trees_5km_Esp,filename=&#39;data/trees_ESP_5km.tif&#39;)</code></pre>
 <p>Now that our tree cover data and climate data are at the same spatial
 resolution, we can stack them into a multi-layer object.</p>
 <pre class="r"><code># Produce the multi-layer environmental data object:
-env_cur &lt;- c(elev_Esp_5km, clim_5km, trees_5km)</code></pre>
+env_cur_Esp &lt;- c(elev_Esp_5km, clim_5km_Esp, trees_5km_Esp)</code></pre>
 <!-- This seems to produce an error. In such case, we need to inspect all `SpatRaster` objects to ensure that they have the same extents and numbers of rows and columns. Here, the elevation layer seems to have one column less than the others. We can solve this by either extending or cropping the layers. -->
 <!-- ```{r} -->
 <!-- # Produce the multi-layer environmental data object after extending the elevation layer: -->
-<!-- env_cur <- c(terra::extend(elev_Esp_5km, clim_5km), clim_5km, trees_5km) -->
+<!-- env_cur_Esp <- c(terra::extend(elev_Esp_5km, clim_5km_Esp), clim_5km_Esp, trees_5km_Esp) -->
 <!-- # OR -->
 <!-- # Produce the multi-layer environmental data object after cropping climate and land use to the extent of the elevation layer: -->
-<!-- env_cur <- c(elev_Esp_5km, terra::crop(clim_5km, elev_Esp_5km), terra::crop(trees_5km, elev_Esp_5km)) -->
+<!-- env_cur_Esp <- c(elev_Esp_5km, terra::crop(clim_5km_Esp, elev_Esp_5km), terra::crop(trees_5km_Esp, elev_Esp_5km)) -->
 <!-- ``` -->
 </div>
 <div id="joining-species-and-environmental-data" class="section level1"
@@ -674,7 +674,7 @@ kite, we can use these coordinates to “pierce” through
 extract relevant environmental data for our species records.</p>
 <pre class="r"><code># We can extract the environmental data for the red kite coordinates.
 # Coordinates are always provided as x/y format, in our case lon/lat.
-head(terra::extract(x = env_cur, 
+head(terra::extract(x = env_cur_Esp, 
     y = data.frame(redkite_det_Esp_2022_wide[,c(&#39;x&#39;,&#39;y&#39;)])))</code></pre>
 <pre><code>##   ID ESP_elv    bio_1    bio_2    bio_3    bio_4  bio_5  bio_6  bio_7     bio_8
 ## 1  1  873.60 12.48100 12.44867 40.39612 652.8463 30.260 -0.556 30.816 14.252000
@@ -698,7 +698,7 @@ head(terra::extract(x = env_cur,
 ## 5  37.20 250.72 0.015780
 ## 6  52.60 101.68 0.013248</code></pre>
 <pre class="r"><code># Finally, we put species and environmental data into the same data frame:
-redkite_det_env_Esp_2022 &lt;- cbind(redkite_det_Esp_2022_wide, terra::extract(x = env_cur, y = data.frame(redkite_det_Esp_2022_wide[,c(&#39;x&#39;,&#39;y&#39;)])))</code></pre>
+redkite_det_env_Esp_2022 &lt;- cbind(redkite_det_Esp_2022_wide, terra::extract(x = env_cur_Esp, y = data.frame(redkite_det_Esp_2022_wide[,c(&#39;x&#39;,&#39;y&#39;)])))</code></pre>
 <p>We now have to inspect the data again to see whether we have any
 missing values or any other issues.</p>
 <pre class="r"><code>summary(redkite_det_env_Esp_2022)
@@ -710,12 +710,18 @@ redkite_det_env_Esp_2022 &lt;- na.exclude(redkite_det_env_Esp_2022)</code></pre>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>
-<li>Choose another land cover class that you deem important for
-explaining red kite occurrence (or another bird species that you chose
-in Practical Occ-2). Download the data and aggregate to the appropriate
-spatial resolution. Add these data to the multi-layer
-<code>SpatRaster</code> object (we called this
-<code>env_cur</code>)</li>
+<li>Take your own bird species that you chose in Practical Occ-2 and
+think about which environmental variables could be important for
+explaining the species occurrence.</li>
+<li>Download at least one other land cover class that you deem important
+for your species, crop to the country or study region of your eBird data
+and aggregate to the appropriate spatial resolution.</li>
+<li>Should you have chosen a different country than Spain, also crop the
+climate and elevation data to this new study region.</li>
+<li>Make a multi-layer <code>SpatRaster</code> object combining all
+environmental data (elevation, climate, land cover) as we did for the
+red kite (<em>env_cur_Esp</em>). Write this object to file as
+GeoTIFF.</li>
 <li>Merge all environmental data with the species data from practical
 Occ-2 and save to file.</li>
 </ul>
