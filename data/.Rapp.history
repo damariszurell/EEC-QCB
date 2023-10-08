@@ -1,3 +1,5 @@
 load("/Users/zurell/data/Lehre/UP_Lehre/EEC/ConsBiogeogr/qcb-course/data/Briscoe_etal_2021_data_Crossbill.RData")
 ls()
 str(spX.un)
+load("/Users/zurell/data/Lehre/UP_Lehre/EEC/ConsBiogeogr/qcb-course/data/Briscoe_etal_2021_data_Crossbill.RData")
+load("/Users/zurell/data/Lehre/UP_Lehre/EEC/ConsBiogeogr/qcb-course/data/Briscoe_etal_2021_data_allspecies_statocc.RData")
