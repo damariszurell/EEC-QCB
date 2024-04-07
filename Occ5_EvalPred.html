@@ -13,7 +13,7 @@
 
 <title>Occupancy models - evaluation &amp; prediction</title>
 
-<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.26/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -39,8 +39,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -771,9 +771,9 @@ environmental raster layers at 5 km spatial resolution stored in your
 data folder. (If not, download from moodle.)</p>
 <pre class="r"><code># Read environmental layers:
 library(terra)</code></pre>
-<pre><code>## terra 1.7.29</code></pre>
+<pre><code>## terra 1.7.46</code></pre>
 <pre class="r"><code>clim_5km &lt;- terra::rast(&#39;data/bioclim_ESP_5km.tif&#39;)
-crop_5km &lt;- terra::rast(&#39;data/crops_5km.tif&#39;)
+crop_5km &lt;- terra::rast(&#39;data/crops_ESP_5km.tif&#39;)
 elev_5km &lt;- terra::rast(&#39;data/elev_Esp_5km.tif&#39;)</code></pre>
 <p>The <code>predict()</code> function expects a data frame. We thus
 combine all environmental information in a data frame and then
@@ -802,17 +802,15 @@ information.</p>
 <pre class="r"><code># Make multi-layer SpatRaster from prediction data frame:
 pred_occ_r &lt;- terra::rast(pred_occ[,c(&#39;x&#39;,&#39;y&#39;,&#39;Predicted&#39;,&#39;SE&#39;)], type=&#39;xyz&#39;, crs=crs(clim_5km))
 pred_det_r &lt;- terra::rast(pred_det[,c(&#39;x&#39;,&#39;y&#39;,&#39;Predicted&#39;,&#39;SE&#39;)], type=&#39;xyz&#39;, crs=crs(clim_5km))</code></pre>
-<p>For mapping, you could use the generic function <code>plot()</code>.
-Here, we are using the <code>spplot()</code> function from the library
-<code>raster</code>, which provides a single legend to both maps.</p>
-<pre class="r"><code>library(raster)
-
-# Map predicted occupancy along with its standard error
-raster::spplot(pred_occ_r, main=&quot;Predicted occupancy&quot;)</code></pre>
+<p>For mapping, we can use the generic function <code>plot()</code>.</p>
+<pre class="r"><code># Map predicted occupancy along with its standard error
+terra::plot(pred_occ_r, range=c(0,1))</code></pre>
 <p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre class="r"><code># Map predicted detectability along with its standard error
-raster::spplot(pred_det_r, main=&quot;Predicted detectability&quot;)</code></pre>
+terra::plot(pred_det_r, range=c(0,0.2))</code></pre>
 <p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
+<p>Don’t forget to save your workspace!</p>
+<pre class="r"><code>save.image(&#39;data/Occ5_EvalPred.RData&#39;)</code></pre>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>

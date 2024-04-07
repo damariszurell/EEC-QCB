@@ -13,7 +13,7 @@
 
 <title>Simple occupancy models</title>
 
-<script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.26/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -29,7 +29,7 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
-<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<script src="site_libs/jqueryui-1.13.2/jquery-ui.min.js"></script>
 <link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
 <script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
@@ -39,8 +39,8 @@
 <link href="site_libs/primer-tooltips-1.4.0/build.css" rel="stylesheet" />
 <link href="site_libs/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet" />
 <script src="site_libs/klippy-0.0.0.9500/js/klippy.min.js"></script>
-<link href="site_libs/font-awesome-6.4.0/css/all.min.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-6.4.0/css/v4-shims.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -630,7 +630,7 @@ summary(redkite_env_thinned)</code></pre>
 ##  Max.   :0.974008   Max.   :0.67191</code></pre>
 <pre class="r"><code># Read in 5km mask of Spain:
 library(terra)</code></pre>
-<pre><code>## terra 1.7.29</code></pre>
+<pre><code>## terra 1.7.46</code></pre>
 <pre class="r"><code>mask_Esp_5km &lt;- terra::rast(&#39;data/mask_Esp_5km.tif&#39;)
 
 # Map the data:
@@ -781,7 +781,7 @@ variables x1 and x2 plus their linear terms</p>
 occu(~1 ~ bio_1 + I(bio_1^2), occ_env_redkite)
 
 # Add quadratic term using poly():
-occu(~1 ~ poly(bio_1, degree=2, raw=T), occ_env_redkite)
+occu(~1 ~ poly(bio_1, degree=2), occ_env_redkite)
 
 # Add another covariate:
 occu(~1 ~ bio_1 + cropland, occ_env_redkite)
@@ -987,8 +987,8 @@ variables according to their univariate importance. To do so, we first
 need to identify all pairs of variables that have correlation |r|&gt;0.7
 and remove the less important variable. <span class="citation">Dormann
 et al. (2013)</span> call this the <em>select07</em> method.</p>
-<p>A <code>select07_unm()</code> function is implemented in the package
-<code>mecofun</code> along with some other useful functions for
+<p>A <code>select07_unm()</code> function is implemented in our teaching
+package <code>mecofun</code> along with some other useful functions for
 teaching. We first have to install the package from the Univ. Potsdam
 gitlab:</p>
 <pre class="r"><code>library(devtools)
@@ -1003,13 +1003,13 @@ var_sel &lt;- select07_unm(occ_env_redkite, names(occ_env_redkite@siteCovs), thr
 # Check out the structure of the resulting object:
 str(var_sel)</code></pre>
 <pre><code>## List of 3
-##  $ AIC     : Named num [1:23] 600 634 636 637 638 ...
-##   ..- attr(*, &quot;names&quot;)= chr [1:23] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_9&quot; &quot;bio_17&quot; ...
+##  $ AIC     : Named num [1:23] 600 634 637 638 638 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:23] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_17&quot; &quot;bio_14&quot; ...
 ##  $ cor_mat : num [1:23, 1:23] 1 -0.8538 0.0425 -0.4327 0.3346 ...
 ##   ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. ..$ : chr [1:23] &quot;ESP_elv&quot; &quot;bio_1&quot; &quot;bio_2&quot; &quot;bio_3&quot; ...
 ##   .. ..$ : chr [1:23] &quot;ESP_elv&quot; &quot;bio_1&quot; &quot;bio_2&quot; &quot;bio_3&quot; ...
-##  $ pred_sel: chr [1:10] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_9&quot; &quot;bio_11&quot; ...</code></pre>
+##  $ pred_sel: chr [1:9] &quot;bio_3&quot; &quot;bio_2&quot; &quot;bio_17&quot; &quot;bio_11&quot; ...</code></pre>
 <pre class="r"><code># We extract the names of the weakly correlated predictors ordered by the univariate variable importance in terms of AIC:
 pred_sel &lt;- var_sel$pred_sel</code></pre>
 <p>So, we have now reduced our set of covariates that are only weakly
@@ -1027,6 +1027,8 @@ nrow(redkite_env_thinned) - sum(apply(redkite_env_thinned[,4:6], 1, max))</code>
 <pre><code>## [1] 580</code></pre>
 <p>In our case, we have fewer presence sites, which will thus be the
 limiting number.</p>
+<p>Don’t forget to save your workspace!</p>
+<pre class="r"><code>save.image(&#39;data/Occ4_SimpleOccModel.RData&#39;)</code></pre>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>
