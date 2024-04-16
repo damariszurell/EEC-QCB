@@ -629,9 +629,8 @@ summary(redkite_env_thinned)</code></pre>
 ##  3rd Qu.:0.461840   3rd Qu.:0.36127  
 ##  Max.   :0.974008   Max.   :0.67191</code></pre>
 <pre class="r"><code># Read in 5km mask of Spain:
-library(terra)</code></pre>
-<pre><code>## terra 1.7.46</code></pre>
-<pre class="r"><code>mask_Esp_5km &lt;- terra::rast(&#39;data/mask_Esp_5km.tif&#39;)
+library(terra)
+mask_Esp_5km &lt;- terra::rast(&#39;data/mask_Esp_5km.tif&#39;)
 
 # Map the data:
 plot(mask_Esp_5km, col=&#39;grey90&#39;, legend=F)
@@ -870,7 +869,6 @@ cand_models &lt;- fitList(
 
 # Compute the summary output for model selection. When explicitly stating which candidate model is the null model, then a Nagelkerke R-square is computed.
 (m_sel &lt;- modSel(cand_models, nullmod=&quot;p(1) psi(1)&quot;))</code></pre>
-<pre><code>## Warning in sqrt(diag(vcov(x, altNames = TRUE))): NaNs produced</code></pre>
 <pre><code>##                                      nPars    AIC delta   AICwt cumltvWt
 ## p(1) psi(bio1.sqr + cropland.sqr)        6 636.41  0.00 3.1e-01     0.31
 ## p(elev) psi(cropland.sqr)                5 637.20  0.79 2.1e-01     0.52
@@ -1027,8 +1025,15 @@ nrow(redkite_env_thinned) - sum(apply(redkite_env_thinned[,4:6], 1, max))</code>
 <pre><code>## [1] 580</code></pre>
 <p>In our case, we have fewer presence sites, which will thus be the
 limiting number.</p>
-<p>Don’t forget to save your workspace!</p>
-<pre class="r"><code>save.image(&#39;data/Occ4_SimpleOccModel.RData&#39;)</code></pre>
+</div>
+</div>
+<div id="homework-prep" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Homework prep</h1>
+<p>For the homework, you will need several objects that you should not
+forget to save.</p>
+<pre class="r"><code># Save (non-terra) objects from the workspace:
+save(occ_redkite, occ_env_redkite, pred_sel, file=&#39;data/Occ4_SimpleOccModel.RData&#39;)</code></pre>
+<p>As homework, solve all the exercises in the blue boxes.</p>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>
@@ -1042,7 +1047,6 @@ Practical Occ-2.</li>
 </ul>
 </div>
 <!-- common errors in occu(): https://doi90.github.io/lodestar/fitting-occupancy-models-with-unmarked.html -->
-</div>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>

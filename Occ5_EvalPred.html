@@ -808,9 +808,15 @@ terra::plot(pred_occ_r, range=c(0,1))</code></pre>
 <p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre class="r"><code># Map predicted detectability along with its standard error
 terra::plot(pred_det_r, range=c(0,0.2))</code></pre>
-<p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
-<p>Don’t forget to save your workspace!</p>
-<pre class="r"><code>save.image(&#39;data/Occ5_EvalPred.RData&#39;)</code></pre>
+<p><img src="Occ5_EvalPred_files/figure-html/unnamed-chunk-13-2.png" width="672" />
+# Homework prep</p>
+<p>For the homework, you will need several objects that you should not
+forget to save.</p>
+<pre class="r"><code># terra objects already on file: &quot;&quot;clim_5km&quot;, &quot;crop_5km&quot;, &quot;elev_5km&quot;
+
+# Save other (non-terra) objects from the workspace:
+save(occ_env_redkite, gof.results, file=&#39;data/Occ5_EvalPred.RData&#39;)</code></pre>
+<p>As homework, solve all the exercises in the blue boxes.</p>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>

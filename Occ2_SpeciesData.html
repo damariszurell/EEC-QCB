@@ -13,7 +13,7 @@
 
 <title>Species data</title>
 
-<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.26/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -538,35 +538,26 @@ default). For the query, we have to provide the personal access token
 for the API.</p>
 <pre class="r"><code># Find all eBird reportings of red kite in Spain in the last 30 days: 
 ebirdregion(loc = &#39;ES&#39;, species = &#39;redkit1&#39;, back=30, key=MY_EBIRD_KEY)</code></pre>
-<pre><code>## # A tibble: 2,051 × 13
+<pre><code>## # A tibble: 1,969 × 13
 ##    speciesCode comName  sciName locId locName obsDt howMany   lat   lng obsValid
 ##    &lt;chr&gt;       &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt;   
-##  1 redkit1     Red Kite Milvus… L511… Surest… 2024…       1  40.2 -3.57 TRUE    
-##  2 redkit1     Red Kite Milvus… L280… Villac… 2024…       4  39.6 -3.41 TRUE    
-##  3 redkit1     Red Kite Milvus… L851… Aeròdr… 2024…       2  39.6  2.71 TRUE    
-##  4 redkit1     Red Kite Milvus… L779… Zarza … 2024…       1  40.2 -6.04 TRUE    
-##  5 redkit1     Red Kite Milvus… L480… Torrej… 2024…       1  39.8 -6.03 TRUE    
-##  6 redkit1     Red Kite Milvus… L116… Emb. S… 2024…       5  40.7 -3.80 TRUE    
-##  7 redkit1     Red Kite Milvus… L303… CC-168… 2024…       5  40.3 -6.05 TRUE    
-##  8 redkit1     Red Kite Milvus… L397… Madrid… 2024…       1  40.5 -3.61 TRUE    
-##  9 redkit1     Red Kite Milvus… L968… Surest… 2024…       1  40.2 -3.57 TRUE    
-## 10 redkit1     Red Kite Milvus… L434… Embals… 2024…       1  41.8 -1.33 TRUE    
-## # ℹ 2,041 more rows
+##  1 redkit1     Red Kite Milvus… L991… Palaci… 2024…       1  41.9 -4.95 TRUE    
+##  2 redkit1     Red Kite Milvus… L116… Noain … 2024…       2  42.8 -1.65 TRUE    
+##  3 redkit1     Red Kite Milvus… L306… Ermita… 2024…       2  41.3 -3.83 TRUE    
+##  4 redkit1     Red Kite Milvus… L677… Pamplo… 2024…       1  42.8 -1.65 TRUE    
+##  5 redkit1     Red Kite Milvus… L566… Puebla… 2024…       1  41.0 -3.44 TRUE    
+##  6 redkit1     Red Kite Milvus… L391… Azud d… 2024…       3  41.0 -5.30 TRUE    
+##  7 redkit1     Red Kite Milvus… L986… Buitra… 2024…       1  41.0 -3.64 TRUE    
+##  8 redkit1     Red Kite Milvus… L782… Zamora… 2024…       2  41.5 -5.81 TRUE    
+##  9 redkit1     Red Kite Milvus… L174… Comuni… 2024…       2  40.7 -3.79 TRUE    
+## 10 redkit1     Red Kite Milvus… L204… Nambro… 2024…       1  39.8 -3.95 TRUE    
+## # ℹ 1,959 more rows
 ## # ℹ 3 more variables: obsReviewed &lt;lgl&gt;, locationPrivate &lt;lgl&gt;, subId &lt;chr&gt;</code></pre>
 <p>To access periods that are longer away than the last 30 days, we can
 use the function <code>ebirdhistorical()</code>.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ dplyr     1.1.2     ✔ readr     2.1.4
-## ✔ forcats   1.0.0     ✔ stringr   1.5.0
-## ✔ ggplot2   3.4.4     ✔ tibble    3.2.1
-## ✔ lubridate 1.9.2     ✔ tidyr     1.3.0
-## ✔ purrr     1.0.2     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code># Get historical data for Spain and filter for red kite
+<pre class="r"><code>library(tidyverse)
+
+# Get historical data for Spain and filter for red kite
 # The command &quot;%&gt;%&quot; is called a pipe and directs the output to the next function
 ebirdhistorical(loc = &#39;ES&#39;, date=&#39;2022-06-01&#39;, fieldSet=&#39;full&#39;, key=MY_EBIRD_KEY) %&gt;%
   filter(speciesCode==&#39;redkit1&#39;)</code></pre>
@@ -658,14 +649,14 @@ resolution.</p>
 <pre class="r"><code># Get mask for Spain
 library(geodata)
 library(terra)
-elev_Esp_1km &lt;- geodata::elevation_30s(country=&#39;ESP&#39;, path=&#39;data&#39;, mask=TRUE)
+elev_Esp_1km_masked &lt;- geodata::elevation_30s(country=&#39;ESP&#39;, path=&#39;data&#39;, mask=TRUE)
 
 # Aggregate to ca. 5km resolution
-elev_Esp_5km &lt;- terra::aggregate(elev_Esp_1km, fact=5)
-plot(elev_Esp_5km)</code></pre>
+elev_Esp_5km_masked &lt;- terra::aggregate(elev_Esp_1km_masked, fact=5)
+plot(elev_Esp_5km_masked)</code></pre>
 <p><img src="Occ2_SpeciesData_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre class="r"><code># Create mask of spain
-mask_Esp_5km &lt;- elev_Esp_5km
+mask_Esp_5km &lt;- elev_Esp_5km_masked
 values(mask_Esp_5km)[!is.na(values(mask_Esp_5km))] &lt;- 1
 plot(mask_Esp_5km)</code></pre>
 <p><img src="Occ2_SpeciesData_files/figure-html/unnamed-chunk-13-2.png" width="672" /></p>
@@ -754,8 +745,17 @@ legend(&#39;bottomright&#39;, legend=0:3, pch=19, col=c(&#39;grey50&#39;,&#39;re
 <p>Finally, save your data, for example by writing the final data frame
 to file or by saving the R object(s).</p>
 <pre class="r"><code>save(redkite_det_Esp_2022_wide,file=&#39;data/redkite_det_Esp_2022_wide.RData&#39;)</code></pre>
-<p>For running the homeworks, don’t forget to save your workspace!</p>
-<pre class="r"><code>save.image(&#39;data/Occ2_SpeciesData.RData&#39;)</code></pre>
+</div>
+<div id="homework-prep" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Homework prep</h1>
+<p>For the homework, you will need several objects that you should not
+forget to save.</p>
+<pre class="r"><code># Write terra objects to file:
+terra::writeRaster(elev_Esp_5km_masked, &#39;data/elev_Esp_5km_masked.tif&#39;)
+terra::writeRaster(mask_Esp_5km, &#39;data/mask_Esp_5km.tif&#39;)
+
+# other (non-terra) objects from the workspace already saved to file: &quot;redkite_det_Esp_2022_wide.RData&quot;</code></pre>
+<p>As homework, solve all the exercises in the blue boxes.</p>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>

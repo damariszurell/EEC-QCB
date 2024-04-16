@@ -13,7 +13,7 @@
 
 <title>Environmental data in R</title>
 
-<script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.26/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
@@ -707,8 +707,15 @@ missing values or any other issues.</p>
 redkite_det_env_Esp_2022 &lt;- na.exclude(redkite_det_env_Esp_2022)</code></pre>
 <p>Don’t forget to save your data.</p>
 <pre class="r"><code>save(redkite_det_env_Esp_2022, file=&#39;data/redkite_det_env_Esp_2022.RData&#39;)</code></pre>
-<p>For running the homeworks, don’t forget to save your workspace!</p>
-<pre class="r"><code>save.image(&#39;data/Occ3_EnvData.RData&#39;)</code></pre>
+</div>
+<div id="homework-prep" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Homework prep</h1>
+<p>For today’s homework, you should already have saved all objects that
+are needed.</p>
+<pre class="r"><code># terra objects already saved to file: &quot;elev_Esp_5km.tif&quot;, &quot;clim_5km_Esp&quot; (saved as &quot;bioclim_ESP_5km.tif&quot;), &quot;clim_fut_5km_Esp&quot; (saved as &quot;bioclim_fut_ESP_5km.tif&quot;), &quot;trees_5km_Esp.tif&quot;
+
+# other (non-terra) objects from the workspace already saved to file: &quot;redkite_det_env_Esp_2022.RData&quot;</code></pre>
+<p>As homework, solve all the exercises in the blue boxes.</p>
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
 <ul>

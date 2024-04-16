@@ -968,7 +968,6 @@ responses</h2>
 first prepare the geographic layers. In practical Occ-3, we have already
 learned how to obtain elevation maps and tree cover maps with the
 <code>geodata</code> package.</p>
-<pre><code>## terra 1.7.46</code></pre>
 <pre class="r"><code>library(geodata)
 library(terra)
 
@@ -1106,8 +1105,6 @@ r_Zs_mean &lt;- terra::rast(Zs_mean, type=&#39;xyz&#39;, crs=crs(elev_CHE))
 # Map predicted mean occupancy
 terra::plot(r_Zs_mean, range=c(0,1))</code></pre>
 <p><img src="Occ6_DynamicOccModel_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
-<p>Don’t forget to save your results.</p>
-<pre class="r"><code>save(Zs,Zs_mean,prev_sim,file=&#39;results/dynocc_sim1000.RData&#39;)</code></pre>
 <p>We see that local mean occupancy actually decreases over time and the
 spatial occupancy patterns seem to become more blurred. This is not
 unexpected as we haven’t yet included any covariates to our colonisation
@@ -1115,8 +1112,15 @@ and extinction models and thus each site as equal colonisation and
 extinction probabilities. As our GoF-test indicated, our model seems to
 be missing important covariate information and we would thus re-initiate
 the modelling cycle to further improve the model.</p>
-<p>For running the homeworks, don’t forget to save your workspace!</p>
-<pre class="r"><code>save.image(&#39;data/Occ6_DynamicOccModel.RData&#39;)</code></pre>
+</div>
+</div>
+<div id="homework-prep" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Homework prep</h1>
+<p>For the homework, you will need several objects that you should not
+forget to save.</p>
+<pre class="r"><code># Save (non-terra) objects from the workspace:
+save(crossbill_umf, gof.results, CHE_env, Zs, Zs_mean, prev_sim, file=&#39;data/Occ6_DynamicOccModel.RData&#39;)</code></pre>
+<p>As homework, solve all the exercises in the blue boxes.</p>
 <!-- Check codes from AHMbook: https://github.com/mikemeredith/AHM_code/tree/main -->
 <div class="alert alert-info">
 <p><em><strong>Exercise:</strong></em></p>
@@ -1129,7 +1133,6 @@ colonisation and extinction and comparing the results step by step.</li>
 (initial occupancy, colonisation, extinction, detectability) for which
 you included predictors.</li>
 </ul>
-</div>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">

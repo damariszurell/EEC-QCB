@@ -11,3 +11,4 @@ data/*grass*
 data/*5km*
 data/redkite_det*
 data/*thinned*
+data/Occ6_DynamicOccModel.RData
