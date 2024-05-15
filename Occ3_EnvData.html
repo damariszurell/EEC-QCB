@@ -501,8 +501,12 @@ valid variable names are ‘tmin’, ‘tmax’ and ‘prec’. See the
 <code>?getData</code> help pages for more information. You can download
 global climate data (function <code>worldclim_global()</code>) or
 climate data for a specific tile (function <code>worldclim_tile()</code>
-- tiles come at 30 x 30 degree spatial extent). Here, we are going to
-download climate data for a specific country.</p>
+- tiles come at 30 x 30 degree spatial extent).</p>
+<div id="country-wise-climate-data" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Country-wise climate
+data</h2>
+<p>Here, we are going to download climate data for a specific
+country.</p>
 <pre class="r"><code>library(terra)
 
 # Download global bioclimatic data from worldclim (you may have to set argument &#39;download=T&#39; for first download, if &#39;download=F&#39; it will attempt to read from file):
@@ -530,8 +534,49 @@ clim_5km_Esp &lt;- terra::aggregate(clim_1km_Esp, fact=5)
 # Plot the climate data
 terra::plot(clim_5km_Esp)</code></pre>
 <p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
-<div id="future-climate-scenarios" class="section level2" number="2.1">
-<h2><span class="header-section-number">2.1</span> Future climate
+</div>
+<div id="global-climate-data" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Global climate
+data</h2>
+<p>Remember from Practical 1 (Spatial data) that you can also download
+global climate data and then crop it to a certain extent or clip it to a
+certain polygon shape (e.g. country shape). As a reminder, this is how
+you could download global climate data at 2.5 min resolution (roughly
+5km):</p>
+<pre class="r"><code>clim_5km_glob &lt;- geodata::worldclim_global(var = &#39;bio&#39;, res = 2.5, download = F, path = &#39;data&#39;)
+
+# Crop to same extent as elevation raster
+clim_5km_Esp2 &lt;- terra::crop(clim_5km_glob, elev_Esp_5km)
+
+# Or clip to a country mask - we already extracted a country mask for Spain in practical 2
+mask_Esp_5km &lt;- terra::rast(&#39;data/mask_Esp_5km.tif&#39;)
+
+# we can clip to the country boundary by using the argument mask=T. We first crop to extent and then use the crop function again for clipping/masking. 
+clim_5km_Esp2_clipped &lt;- terra::crop(clim_5km_glob, mask_Esp_5km)
+
+# However, this here throws a warning and does not seem to properly clip
+clim_5km_Esp2_clipped &lt;- terra::crop(clim_5km_Esp2_clipped, mask_Esp_5km, mask=T)</code></pre>
+<pre><code>## Warning: [crop] cannot mask with a raster that is not aligned to x</code></pre>
+<pre class="r"><code># check output:
+terra::plot(clim_5km_Esp2_clipped[[1]])</code></pre>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code># the problem is the different origin
+terra::origin(mask_Esp_5km)</code></pre>
+<pre><code>## [1] -0.01666667 -0.01666667</code></pre>
+<pre class="r"><code>terra::origin(clim_5km_glob)</code></pre>
+<pre><code>## [1] 0 0</code></pre>
+<pre class="r"><code># we can ammend this by resampling
+mask_Esp_5km &lt;- terra::resample(mask_Esp_5km, clim_5km_Esp2_clipped)
+
+# now retry the clipping:
+clim_5km_Esp2_clipped &lt;- terra::crop(clim_5km_Esp2_clipped, mask_Esp_5km, mask=T)
+
+# check output
+terra::plot(clim_5km_Esp2_clipped[[1]])</code></pre>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+</div>
+<div id="future-climate-scenarios" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Future climate
 scenarios</h2>
 <p>The Chelsa and worldclim data bases also offer downscaled climate
 scenarios. The scenarios stem from the World Climate Research Programme
@@ -573,7 +618,7 @@ clim_fut_5km_Esp</code></pre>
 ## min values  :   2.9,   3.4,  27.8, 222.1,  21.0,  -9.5, ... 
 ## max values  :  23.1,  15.9,  47.6, 900.7,  43.7,  13.0, ...</code></pre>
 <pre class="r"><code>plot(clim_fut_5km_Esp)</code></pre>
-<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>We see that the current and future climate <code>SpatRaster</code>
 objects have different layer names. This could cause problems in
 occupancy modelling and we thus want make sure that they all have the
@@ -634,7 +679,7 @@ trees_1km_Esp &lt;- terra::crop(trees_1km, elev_Esp_1km)
 
 # map the tree cover
 plot(trees_1km_Esp)</code></pre>
-<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>Above, we used climate data at 2.5-min (roughly 5 km) spatial
 resolution. To obtain the same spatial resolution for the land cover, we
 have to aggregate the <code>SpatRaster</code> object.</p>
@@ -643,7 +688,7 @@ trees_5km_Esp &lt;- terra::aggregate(trees_1km_Esp, fact=5, fun=&#39;mean&#39;)
 
 # Map the 2.5-min tree cover (roughly 5 km)
 plot(trees_5km_Esp)</code></pre>
-<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="Occ3_EnvData_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code># Save to file
 terra::writeRaster(trees_5km_Esp,filename=&#39;data/trees_ESP_5km.tif&#39;)</code></pre>
 <p>Now that our tree cover data and climate data are at the same spatial
